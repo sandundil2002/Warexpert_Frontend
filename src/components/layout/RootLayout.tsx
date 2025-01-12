@@ -1,6 +1,6 @@
 import {Outlet} from "react-router-dom";
 
-export const RootLayoutComponent = () => {
+export const RootLayout = () => {
     return (
         <>
             <Outlet></Outlet>
