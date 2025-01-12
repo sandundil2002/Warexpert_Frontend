@@ -2,8 +2,8 @@ import './App.css'
 import {createBrowserRouter, Navigate, RouterProvider} from "react-router-dom";
 import {RootLayoutComponent} from "./components/layout/RootLayoutComponent.tsx";
 import {NotFoundComponent} from "./components/layout/NotFoundComponent.tsx";
-import {SignupFormComponent} from "./components/authentication/SignupFormComponent.tsx";
-import {SignInFormComponent} from "./components/authentication/SignInFormComponent.tsx";
+import {UserSignInPage} from "./pages/UserSignInPage.tsx";
+import {UserSignUpPage} from "./pages/UserSignUpPage.tsx";
 
 function App() {
 
@@ -13,8 +13,8 @@ function App() {
             element : <RootLayoutComponent/>,
             children : [
                 { path: '', element: <Navigate to="/signin" replace /> },
-                { path : '/signin', element : <SignInFormComponent/>},
-                { path : '/signup', element : <SignupFormComponent/>},
+                { path : '/signin', element : <UserSignInPage/>},
+                { path : '/signup', element : <UserSignUpPage/>},
             ]
         },
         {
