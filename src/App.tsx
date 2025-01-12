@@ -4,6 +4,7 @@ import {RootLayout} from "./components/layout/RootLayout.tsx";
 import {UserSignInPage} from "./pages/UserSignInPage.tsx";
 import {UserSignUpPage} from "./pages/UserSignUpPage.tsx";
 import {NotFoundPage} from "./pages/NotFoundPage.tsx";
+import {DashboardPage} from "./pages/DashboardPage.tsx";
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
                 { path: '', element: <Navigate to="/signin" replace /> },
                 { path : '/signin', element : <UserSignInPage/>},
                 { path : '/signup', element : <UserSignUpPage/>},
+                { path : '/dashboard', element : <DashboardPage/>},
             ]
         },
         {

@@ -1,6 +1,6 @@
-import {AuthImageComponent} from "../components/image/AuthImageComponent.tsx";
-import {AuthInputComponent} from "../components/input/AuthInputComponent.tsx";
-import {AuthButtonComponent} from "../components/button/AuthButtonComponent.tsx";
+import {AuthImageComponent} from "../components/authentication/image/AuthImageComponent.tsx";
+import {AuthInputComponent} from "../components/authentication/input/AuthInputComponent.tsx";
+import {AuthButtonComponent} from "../components/authentication/button/AuthButtonComponent.tsx";
 
 export const UserSignInPage = () => {
     return (
