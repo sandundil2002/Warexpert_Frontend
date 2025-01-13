@@ -10,14 +10,14 @@ interface DashboardPageLayoutProps {
     children: ReactNode;
 }
 
-export const DashboardPageLayout: React.FC<DashboardPageLayoutProps> = ({ children }) => {
+export const DashboardPageLayout: React.FC<DashboardPageLayoutProps> = () => {
     const router = DashboardRouterComponent('/dashboard');
 
     return (
         <AppProvider navigation={DashboardNavComponent} router={router} theme={DashboardThemeComponent} branding={{title: "WareXpert Management System", homeUrl:"/dashboard"}}>
             <DashboardLayout>
-                <PageContainer>
-                    {children}
+                <PageContainer title="" sx={{'.MuiTypography-root': { display: 'none' },}}>
+                    {router.Component}
                 </PageContainer>
             </DashboardLayout>
         </AppProvider>

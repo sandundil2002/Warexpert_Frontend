@@ -1,9 +1,10 @@
-import Grid from '@mui/material/Grid2';
 import React from "react";
+import Grid from '@mui/material/Grid2';
 import {DashboardPageLayout} from "../components/layout/DashboardPageLayout.tsx";
 import {DashboardSkeletonComponent} from "../components/dashboard/feature/DashboardSkeletonComponent.tsx";
 
 export const DashboardPage: React.FC = () => {
+
     return (
         <DashboardPageLayout>
             <Grid container spacing={1}>
