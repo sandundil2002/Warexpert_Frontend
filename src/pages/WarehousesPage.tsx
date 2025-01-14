@@ -18,49 +18,42 @@ export const WarehousesPage = () => {
             id: 'warehouseName',
             label: 'Warehouse Name',
             type: 'text' as const,
-            placeholder: 'Enter warehouse name',
             required: true
         },
         {
             id: 'location',
             label: 'Location',
             type: 'text' as const,
-            placeholder: 'Enter location',
             required: true
         },
         {
             id: 'size',
             label: 'Size',
             type: 'number' as const,
-            placeholder: 'Enter size(sqft)',
             required: true
         },
         {
             id: 'capacity',
             label: 'Capacity',
             type: 'number' as const,
-            placeholder: 'Enter capacity(pallets)',
             required: true
         },
         {
             id: 'staffId',
             label: 'Staff ID',
-            type: 'text' as const,
-            placeholder: 'Enter allocated staff ID',
+            type: 'select' as const,
             required: true
         },
         {
             id: 'inventories',
             label: 'Inventories',
-            type: 'text' as const,
-            placeholder: 'Enter inventories',
+            type: 'select' as const,
             required: true
         },
         {
             id: 'image',
-            label: 'Image URL',
-            type: 'text' as const,
-            placeholder: 'Enter image URL',
+            label: 'Warehouse Image',
+            type: 'file' as const,
             required: true
         }
     ];
