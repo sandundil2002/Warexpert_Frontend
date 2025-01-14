@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {InputPopupModalComponent} from "../components/popup/InputPopupModalComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
+import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 
 export const WarehousesPage = () => {
     const [open, setOpen] = useState(false);
@@ -73,6 +74,7 @@ export const WarehousesPage = () => {
                 fields={fields}
                 onSubmit={handleSubmit}
             />
+            <SearchBarComponent title="Search By Warehouse ID" />
         </>
     );
 };
