@@ -1,6 +1,14 @@
 import * as React from 'react';
 import {CloudUploadIcon, X} from 'lucide-react';
-import {Button, FormControl, InputLabel, Select, TextField} from "@mui/material";
+import {
+    Button,
+    FormControl,
+    InputLabel,
+    Modal,
+    Select,
+    TextField,
+    useTheme
+} from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 
 interface ModalField {
@@ -19,6 +27,8 @@ interface PopupModal {
 }
 
 export const InputPopupModalComponent: React.FC<PopupModal> = ({open, handleClose, title, fields, onSubmit}) => {
+    const theme = useTheme();
+    const isDarkMode = theme.palette.mode === 'dark';
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,89 +54,113 @@ export const InputPopupModalComponent: React.FC<PopupModal> = ({open, handleClos
 
     return (
         <>
-            <div className="overflow-auto bg-opacity-50 flex items-center justify-center">
-                <div className="bg-gray-500 top-40 rounded-lg w-full max-w-md p-6 absolute text-white">
-                    <div className="flex justify-between items-center mb-5">
-                        <h2 className="text-xl font-bold">{title}</h2>
-                        <button onClick={handleClose} className="text-white bg-red-700 rounded">
-                            <X size={30}/>
-                        </button>
-                    </div>
-
-                    <form onSubmit={handleFormSubmit}>
-                        {groupedFields.map((row, rowIndex) => (
-                            <div key={rowIndex} className="flex gap-4 mb-10">
-                                {row.map((field) => (
-                                    <div key={field.id} className="w-1/2">
-                                        {field.type === 'file' ? (
-                                            <Button
-                                                className="mt-2"
-                                                component="label"
-                                                role={undefined}
-                                                variant="contained"
-                                                tabIndex={-1}
-                                                startIcon={<CloudUploadIcon />}
-                                            >
-                                                {field.label}
-                                            </Button>
-                                            // <div className="flex items-center gap-2">
-                                            //     <button
-                                            //         type="button"
-                                            //         className="px-4 py-2 bg-gray-200 rounded text-sm"
-                                            //     >
-                                            //         Choose File
-                                            //     </button>
-                                            //     <span className="text-sm text-gray-500">No file chosen</span>
-                                            // </div>
-                                        ) : field.type === 'select' ? (
-                                            <FormControl variant="standard" sx={{ minWidth: 195 }}>
-                                                <InputLabel>{field.label}</InputLabel>
-                                                <Select
-                                                    labelId={field.label}
-                                                    id={field.id}
-                                                    value={field.id}
-                                                    // onChange={}
-                                                    label={field.label}
-                                                >
-                                                    <MenuItem value={field.id}>Select an option</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            // <select
-                                            //     id={field.id}
-                                            //     name={field.id}
-                                            //     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                                            // >
-                                            //     <option value="">Select an option</option>
-                                            // </select>
-                                        ) : (
-                                            <TextField id={field.id} type={field.type} label={field.label} name={field.id} placeholder={field.placeholder} variant="standard" />
-                                            // <input
-                                            //     type={field.type}
-                                            //     id={field.id}
-                                            //     name={field.id}
-                                            //     placeholder={field.placeholder}
-                                            //     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5"
-                                            // />
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
-
-                        <div className="flex justify-end gap-3 mt-6">
-                            <button type="button" onClick={handleClose}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
-                                Cancel
-                            </button>
-                            <button type="submit"
-                                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">
+            <Modal open={open} onClose={handleClose}>
+                <div className="overflow-auto bg-opacity-50 flex items-center justify-center">
+                    <div className={`top-40 rounded-lg w-full max-w-md p-6 absolute shadow-lg ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                        <div className="flex justify-between items-center mb-5">
+                            <h2 className={`text-xl font-bold ${isDarkMode ? 'text-slate-100' : 'text-slate-800'}`}>
                                 {title}
+                            </h2>
+                            <button
+                                onClick={handleClose}
+                                className="text-white bg-red-500 hover:bg-red-600 rounded transition-colors"
+                            >
+                                <X size={30}/>
                             </button>
                         </div>
-                    </form>
+
+                        <form onSubmit={handleFormSubmit}>
+                            {groupedFields.map((row, rowIndex) => (
+                                <div key={rowIndex} className="flex gap-4 mb-10">
+                                    {row.map((field) => (
+                                        <div key={field.id} className="w-1/2">
+                                            {field.type === 'file' ? (
+                                                <Button
+                                                    className="mt-2"
+                                                    component="label"
+                                                    role={undefined}
+                                                    variant="contained"
+                                                    tabIndex={-1}
+                                                    startIcon={<CloudUploadIcon />}
+                                                    sx={{
+                                                        backgroundColor: '#3b82f6',
+                                                        '&:hover': {
+                                                            backgroundColor: '#2563eb'
+                                                        }
+                                                    }}
+                                                >
+                                                    {field.label}
+                                                </Button>
+                                            ) : field.type === 'select' ? (
+                                                <FormControl variant="outlined" sx={{ minWidth: 195 }}>
+                                                    <InputLabel>{field.label}</InputLabel>
+                                                    <Select
+                                                        labelId={field.label}
+                                                        id={field.id}
+                                                        value={field.id}
+                                                        label={field.label}
+                                                        sx={{
+                                                            backgroundColor: isDarkMode ? 'rgb(30 41 59)' : 'white',
+                                                            color: isDarkMode ? 'rgb(226 232 240)' : 'inherit',
+                                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                                borderColor: isDarkMode ? 'rgb(71 85 105)' : '#e2e8f0'
+                                                            },
+                                                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                                borderColor: isDarkMode ? 'rgb(100 116 139)' : '#cbd5e1'
+                                                            }
+                                                        }}
+                                                    >
+                                                        <MenuItem value={field.id}>Select an option</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            ) : (
+                                                <TextField
+                                                    id={field.id}
+                                                    type={field.type}
+                                                    label={field.label}
+                                                    name={field.id}
+                                                    placeholder={field.placeholder}
+                                                    variant="outlined"
+                                                    sx={{
+                                                        backgroundColor: isDarkMode ? 'rgb(30 41 59)' : 'white',
+                                                        '& .MuiInputLabel-root': {
+                                                            color: isDarkMode ? 'rgb(226 232 240)' : 'inherit'
+                                                        },
+                                                        '& .MuiInputBase-input': {
+                                                            color: isDarkMode ? 'rgb(226 232 240)' : 'inherit'
+                                                        },
+                                                        '& .MuiOutlinedInput-root': {
+                                                            '& fieldset': {
+                                                                borderColor: isDarkMode ? 'rgb(71 85 105)' : '#e2e8f0'
+                                                            },
+                                                            '&:hover fieldset': {
+                                                                borderColor: isDarkMode ? 'rgb(100 116 139)' : '#cbd5e1'
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+
+                            <div className="flex justify-end gap-3 mt-6">
+                                <button type="button" onClick={handleClose} className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isDarkMode
+                                        ? 'text-slate-200 bg-slate-700 hover:bg-slate-600'
+                                        : 'text-slate-700 bg-slate-200 hover:bg-slate-300'
+                                    }`}
+                                >
+                                    Cancel
+                                </button>
+                                <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">
+                                    {title}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            </Modal>
         </>
     );
 };

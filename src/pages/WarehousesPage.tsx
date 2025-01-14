@@ -1,12 +1,41 @@
-import {useState} from "react";
-import {InputPopupModalComponent} from "../components/popup/InputPopupModalComponent.tsx";
-import {TitleComponent} from "../components/common/TitleComponent.tsx";
-import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
+import React, { useState } from "react";
+import { InputPopupModalComponent } from "../components/popup/InputPopupModalComponent";
+import { TitleComponent } from "../components/common/TitleComponent";
+import { SearchBarComponent } from "../components/common/SearchBarComponent";
+import { ColumnDef, GenericTable } from "../components/common/TableComponent";
+import { Warehouse } from "../components/interfaces/warehouse";
 
-export const WarehousesPage = () => {
+// Sample data - replace with your actual data source
+const sampleData: Warehouse[] = [
+    {
+        id: "WH001",
+        name: "Main Warehouse",
+        location: "123 Storage St",
+        size: "10000",
+        capacity: "5000",
+        staffMembers: "10",
+        inventories: "Electronics",
+        image: "warehouse1.jpg"
+    },
+    {
+        id: "WH002",
+        name: "South Branch",
+        location: "456 Depot Ave",
+        size: "8000",
+        capacity: "4000",
+        staffMembers: "8",
+        inventories: "Furniture",
+        image: "warehouse2.jpg"
+    }
+];
+
+export const WarehousesPage: React.FC = () => {
+    // State
+    const [warehouses, setWarehouses] = useState<Warehouse[]>(sampleData);
     const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
+    const [searchQuery, setSearchQuery] = useState("");
 
+    // Form fields configuration
     const fields = [
         {
             id: 'warehouseId',
@@ -43,38 +72,121 @@ export const WarehousesPage = () => {
             id: 'staffId',
             label: 'Staff ID',
             type: 'select' as const,
-            required: true
+            required: true,
+            options: [
+                { value: '1', label: 'Staff 1' },
+                { value: '2', label: 'Staff 2' }
+            ]
         },
         {
             id: 'inventories',
             label: 'Inventories',
             type: 'select' as const,
-            required: true
+            required: true,
+            options: [
+                { value: 'electronics', label: 'Electronics' },
+                { value: 'furniture', label: 'Furniture' }
+            ]
         },
         {
             id: 'image',
             label: 'Warehouse Image',
             type: 'file' as const,
-            required: true
+            required: true,
+            accept: 'image/*'
         }
     ];
 
+    // Table columns configuration
+    const columns: ColumnDef<Warehouse>[] = [
+        { id: 'id', label: 'ID', align: 'left' },
+        { id: 'name', label: 'Name', align: 'left' },
+        { id: 'location', label: 'Location', align: 'left' },
+        { id: 'size', label: 'Size', align: 'right' },
+        { id: 'capacity', label: 'Capacity', align: 'right' },
+        { id: 'staffMembers', label: 'Staff Members', align: 'right' },
+        { id: 'inventories', label: 'Inventories', align: 'left' },
+        {
+            id: 'image',
+            label: 'Image',
+            align: 'left',
+            render: (warehouse: Warehouse) => (
+                <img
+                    src={warehouse.image}
+                    alt={`${warehouse.name} image`}
+                    className="w-10 h-10 rounded object-cover"
+                />
+            )
+        },
+        { id: 'actions', label: 'Actions', align: 'center' }
+    ];
 
-    const handleSubmit = (data: Record<string, any>) => {
+    // Handlers
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const handleEdit = (warehouse: Warehouse) => {
+        console.log('Edit warehouse:', warehouse);
+        // Implement edit functionality
+    };
+
+    const handleDelete = async (warehouseId: string) => {
+        console.log('Delete warehouse:', warehouseId);
+        // Implement delete functionality
+        // Example:
+        // await deleteWarehouse(warehouseId);
+        // setWarehouses(warehouses.filter(w => w.id !== warehouseId));
+    };
+
+    const handleSubmit = async (data: Record<string, any>) => {
         console.log('Form data:', data);
-        // Handle form submission
+        // Implement form submission
+        // Example:
+        // const newWarehouse = await createWarehouse(data);
+        // setWarehouses([...warehouses, newWarehouse]);
+        handleClose();
+    };
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        // Implement search functionality
+        // Example:
+        // const filteredWarehouses = warehouses.filter(w =>
+        //     w.id.toLowerCase().includes(query.toLowerCase())
+        // );
+        // setFilteredWarehouses(filteredWarehouses);
     };
 
     return (
-        <>
-            <TitleComponent title="Warehouse Section" addWarehouse={handleOpen}/>
+        <div className="p-4 space-y-4">
+            <TitleComponent
+                title="Warehouse Section"
+                addWarehouse={handleOpen}
+            />
+
+            <SearchBarComponent
+                title="Search By Warehouse ID"
+                value={searchQuery}
+                onChange={handleSearch}
+            />
+
+            <GenericTable
+                data={warehouses}
+                columns={columns}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                enableSelection={true}
+                onRowSelect={(warehouse) => console.log('Selected warehouse:', warehouse)}
+                rowsPerPage={5}
+            />
+
             <InputPopupModalComponent
-                open={open} handleClose={() => setOpen(false)}
+                open={open}
+                handleClose={handleClose}
                 title="Add New Warehouse"
                 fields={fields}
                 onSubmit={handleSubmit}
             />
-            <SearchBarComponent title="Search By Warehouse ID" />
-        </>
+        </div>
     );
 };
