@@ -34,15 +34,23 @@ interface PopupModal {
 export const PopupModalComponent: React.FC<PopupModal> = ({open, handleClose, title, fields, onSubmit, initialData = {}, mode}) => {
     const theme = useTheme();
     const isDarkMode = theme.palette.mode === 'dark';
+    const [hasOpened, setHasOpened] = React.useState(false);
     const [formValues, setFormValues] = React.useState<Record<string, any>>({});
 
     React.useEffect(() => {
-        if (mode === 'edit' && initialData) {
-            setFormValues(initialData);
-        } else {
-            setFormValues({});
+        if (open && !hasOpened) {
+            if (mode === 'edit' && initialData) {
+                setFormValues(initialData);
+            } else {
+                setFormValues({});
+            }
+            setHasOpened(true);
         }
-    }, [initialData, mode, open]);
+
+        if (!open) {
+            setHasOpened(false);
+        }
+    }, [open, mode, initialData, hasOpened]);
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
