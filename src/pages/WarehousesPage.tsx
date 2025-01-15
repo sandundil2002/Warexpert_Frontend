@@ -183,9 +183,9 @@ export const WarehousesPage: React.FC = () => {
 
     return (
         <div className="p-4 space-y-4">
-            <TitleComponent title="Warehouse Section" addWarehouse={handleOpen}/>
+            <TitleComponent title="Warehouse Section" addNew={handleOpen}/>
 
-            <SearchBarComponent title="Search By Warehouse ID" />
+            <SearchBarComponent title="Search Warehouse By ID" />
 
             <TableComponent
                 data={warehouses}

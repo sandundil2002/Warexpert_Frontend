@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 interface ModalField {
     id: string;
     label: string;
-    type: 'text' | 'gps' | 'number' | 'file' | 'select';
+    type: 'text' | 'email' | 'gps' | 'number' | 'file' | 'select';
     placeholder?: string;
     required?: boolean;
     readOnly?: boolean;
@@ -31,15 +31,7 @@ interface PopupModal {
     mode: 'create' | 'edit';
 }
 
-export const PopupModalComponent: React.FC<PopupModal> = ({
-                                                                   open,
-                                                                   handleClose,
-                                                                   title,
-                                                                   fields,
-                                                                   onSubmit,
-                                                                   initialData = {},
-                                                                   mode
-                                                               }) => {
+export const PopupModalComponent: React.FC<PopupModal> = ({open, handleClose, title, fields, onSubmit, initialData = {}, mode}) => {
     const theme = useTheme();
     const isDarkMode = theme.palette.mode === 'dark';
     const [formValues, setFormValues] = React.useState<Record<string, any>>({});
@@ -99,7 +91,7 @@ export const PopupModalComponent: React.FC<PopupModal> = ({
                 <div className={`top-40 rounded-lg w-full max-w-md p-6 absolute shadow-lg ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
                     <div className="flex justify-between items-center mb-5">
                         <h2 className={`text-xl font-bold ${isDarkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                            {mode === 'create' ? `Add New ${title}` : `Edit ${title} ${initialData.warehouseName}`}
+                            {mode === 'create' ? `Add New ${title}` : `Edit ${title}`}
                         </h2>
                         <button
                             onClick={handleClose}

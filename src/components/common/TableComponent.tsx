@@ -39,19 +39,10 @@ export interface GenericTableProps<T extends TableItem> {
     customActions?: (item: T) => React.ReactNode;
 }
 
-export const TableComponent = <T extends TableItem>({
-                                                      data,
-                                                      columns,
-                                                      onEdit,
-                                                      onDelete,
-                                                      rowsPerPage = 5,
-                                                      enableSelection = true,
-                                                      onRowSelect,
-                                                      customActions
-                                                  }: GenericTableProps<T>) => {
+export const TableComponent = <T extends TableItem>({data, columns, onEdit, onDelete, rowsPerPage = 5, enableSelection = true, onRowSelect, customActions}: GenericTableProps<T>) => {
+
     const [page] = useState(0);
     const [selectedRow, setSelectedRow] = useState<string | null>(null);
-    
     const isSelected = (id: string) => selectedRow === id;
 
     const handleRowClick = (item: T) => {
