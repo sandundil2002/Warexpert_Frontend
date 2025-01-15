@@ -17,7 +17,7 @@ import {
 // Generic interface for table items
 export interface TableItem {
     id: string;
-    [key: string]: any;
+    [key: string]: string;
 }
 
 // Interface for column definition
@@ -39,7 +39,7 @@ export interface GenericTableProps<T extends TableItem> {
     customActions?: (item: T) => React.ReactNode;
 }
 
-export const GenericTable = <T extends TableItem>({
+export const TableComponent = <T extends TableItem>({
                                                       data,
                                                       columns,
                                                       onEdit,
@@ -49,11 +49,9 @@ export const GenericTable = <T extends TableItem>({
                                                       onRowSelect,
                                                       customActions
                                                   }: GenericTableProps<T>) => {
-    const [page, setPage] = useState(0);
+    const [page] = useState(0);
     const [selectedRow, setSelectedRow] = useState<string | null>(null);
-
-    const handleChangePage = (event: unknown, newPage: number) => setPage(newPage);
-
+    
     const isSelected = (id: string) => selectedRow === id;
 
     const handleRowClick = (item: T) => {

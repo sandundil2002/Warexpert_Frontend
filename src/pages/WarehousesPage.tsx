@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { InputPopupModalComponent } from "../components/popup/InputPopupModalComponent";
+import { PopupModalComponent } from "../components/popup/PopupModalComponent.tsx";
 import { TitleComponent } from "../components/common/TitleComponent";
 import { SearchBarComponent } from "../components/common/SearchBarComponent";
-import { ColumnDef, GenericTable } from "../components/common/TableComponent";
+import { ColumnDef, TableComponent } from "../components/common/TableComponent";
 import { Warehouse } from "../components/interfaces/warehouse";
 
 // Sample data - replace with your actual data source
@@ -33,7 +33,8 @@ export const WarehousesPage: React.FC = () => {
     // State
     const [warehouses, setWarehouses] = useState<Warehouse[]>(sampleData);
     const [open, setOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedWarehouse, setSelectedWarehouse] = useState<Warehouse | null>(null);
+    const [mode, setMode] = useState<'create' | 'edit'>('create');
 
     // Form fields configuration
     const fields = [
@@ -121,56 +122,72 @@ export const WarehousesPage: React.FC = () => {
         { id: 'actions', label: 'Actions', align: 'center' }
     ];
 
-    // Handlers
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleOpen = () => {
+        setMode('create');
+        setSelectedWarehouse(null);
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setSelectedWarehouse(null);
+    };
 
     const handleEdit = (warehouse: Warehouse) => {
-        console.log('Edit warehouse:', warehouse);
-        // Implement edit functionality
+        setMode('edit');
+        setSelectedWarehouse(warehouse);
+        setOpen(true);
     };
 
     const handleDelete = async (warehouseId: string) => {
-        console.log('Delete warehouse:', warehouseId);
-        // Implement delete functionality
-        // Example:
-        // await deleteWarehouse(warehouseId);
-        // setWarehouses(warehouses.filter(w => w.id !== warehouseId));
+        // Your existing delete logic...
+        const updatedWarehouses = warehouses.filter(w => w.id !== warehouseId);
+        setWarehouses(updatedWarehouses);
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
-        console.log('Form data:', data);
-        // Implement form submission
-        // Example:
-        // const newWarehouse = await createWarehouse(data);
-        // setWarehouses([...warehouses, newWarehouse]);
+        if (mode === 'create') {
+            // Handle creation
+            const newWarehouse: Warehouse = {
+                id: `WH${(warehouses.length + 1).toString().padStart(3, '0')}`,
+                name: data.warehouseName,
+                location: data.location,
+                size: data.size,
+                capacity: data.capacity,
+                staffMembers: data.staffId,
+                inventories: data.inventories,
+                image: data.image instanceof File ? URL.createObjectURL(data.image) : 'default-image.jpg'
+            };
+            setWarehouses([...warehouses, newWarehouse]);
+        } else {
+            // Handle update
+            const updatedWarehouses = warehouses.map(warehouse => {
+                if (warehouse.id === selectedWarehouse?.id) {
+                    return {
+                        ...warehouse,
+                        name: data.warehouseName,
+                        location: data.location,
+                        size: data.size,
+                        capacity: data.capacity,
+                        staffMembers: data.staffId,
+                        inventories: data.inventories,
+                        image: data.image instanceof File ? URL.createObjectURL(data.image) : warehouse.image
+                    };
+                }
+                return warehouse;
+            });
+            setWarehouses(updatedWarehouses);
+        }
         handleClose();
-    };
-
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-        // Implement search functionality
-        // Example:
-        // const filteredWarehouses = warehouses.filter(w =>
-        //     w.id.toLowerCase().includes(query.toLowerCase())
-        // );
-        // setFilteredWarehouses(filteredWarehouses);
     };
 
     return (
         <div className="p-4 space-y-4">
-            <TitleComponent
-                title="Warehouse Section"
-                addWarehouse={handleOpen}
-            />
+            <TitleComponent title="Warehouse Section" addWarehouse={handleOpen}/>
 
-            <SearchBarComponent
-                title="Search By Warehouse ID"
-                value={searchQuery}
-                onChange={handleSearch}
-            />
+            <SearchBarComponent title="Search By Warehouse ID" />
 
-            <GenericTable
+            <TableComponent
                 data={warehouses}
                 columns={columns}
                 onEdit={handleEdit}
@@ -180,12 +197,23 @@ export const WarehousesPage: React.FC = () => {
                 rowsPerPage={5}
             />
 
-            <InputPopupModalComponent
+            <PopupModalComponent
                 open={open}
                 handleClose={handleClose}
-                title="Add New Warehouse"
+                title="Warehouse"
                 fields={fields}
                 onSubmit={handleSubmit}
+                initialData={mode === 'edit' ? {
+                    warehouseId: selectedWarehouse?.id,
+                    warehouseName: selectedWarehouse?.name,
+                    location: selectedWarehouse?.location,
+                    size: selectedWarehouse?.size,
+                    capacity: selectedWarehouse?.capacity,
+                    staffId: selectedWarehouse?.staffMembers,
+                    inventories: selectedWarehouse?.inventories,
+                    image: selectedWarehouse?.image
+                } : undefined}
+                mode={mode}
             />
         </div>
     );
