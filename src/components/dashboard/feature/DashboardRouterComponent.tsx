@@ -4,6 +4,8 @@ import {WarehousesPage} from "../../../pages/WarehousesPage.tsx";
 import {NotFoundPage} from "../../../pages/NotFoundPage.tsx";
 import {CustomerPage} from "../../../pages/CustomerPage.tsx";
 import {InventoryPage} from "../../../pages/InventoryPage.tsx";
+import {EmployeePage} from "../../../pages/EmployeePage.tsx";
+import {LogsPage} from "../../../pages/LogsPage.tsx";
 
 type RouteConfig = {
     [path: string]: ReactElement;
@@ -17,6 +19,8 @@ export function DashboardRouterComponent(initialPath: string): Router  & { Compo
         '/warehouses': <WarehousesPage />,
         '/customers': <CustomerPage />,
         '/inventory': <InventoryPage />,
+        '/employees': <EmployeePage />,
+        '/logs': <LogsPage />,
     };
 
     return useMemo(() => {

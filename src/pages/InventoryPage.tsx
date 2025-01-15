@@ -5,7 +5,6 @@ import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
 
-
 const sampleDate: Inventory[] = [
     {
         id: "INV001",
