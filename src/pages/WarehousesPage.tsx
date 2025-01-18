@@ -1,42 +1,24 @@
-import React, { useState } from "react";
+import React, {useMemo, useState} from "react";
 import { PopupModalComponent } from "../components/popup/PopupModalComponent.tsx";
 import { TitleComponent } from "../components/common/TitleComponent";
 import { SearchBarComponent } from "../components/common/SearchBarComponent";
 import { ColumnDef, TableComponent } from "../components/common/TableComponent";
 import { Warehouse } from "../components/interfaces/warehouse";
+import {useDispatch, useSelector} from "react-redux";
+import {addWarehouse, deleteWarehouse, updateWarehouse} from "../slices/WarehouseSlice.tsx";
 
-// Sample data - replace with your actual data source
-const sampleData: Warehouse[] = [
-    {
-        id: "WH001",
-        name: "Main Warehouse",
-        location: "123 Storage St",
-        size: "10000",
-        capacity: "5000",
-        staffMembers: "10",
-        inventories: "Electronics",
-        image: "warehouse1.jpg"
-    },
-    {
-        id: "WH002",
-        name: "South Branch",
-        location: "456 Depot Ave",
-        size: "8000",
-        capacity: "4000",
-        staffMembers: "8",
-        inventories: "Furniture",
-        image: "warehouse2.jpg"
-    }
-];
+interface RootState {
+    warehouse: Warehouse[];
+}
 
 export const WarehousesPage: React.FC = () => {
-    // State
-    const [warehouses, setWarehouses] = useState<Warehouse[]>(sampleData);
+    const warehouses = useSelector((state: RootState) => state.warehouse);
+    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<Warehouse | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
-    // Form fields configuration
     const fields = [
         {
             id: 'warehouseId',
@@ -98,7 +80,6 @@ export const WarehousesPage: React.FC = () => {
         }
     ];
 
-    // Table columns configuration
     const columns: ColumnDef<Warehouse>[] = [
         { id: 'id', label: 'ID', align: 'left' },
         { id: 'name', label: 'Name', align: 'left' },
@@ -140,14 +121,11 @@ export const WarehousesPage: React.FC = () => {
     };
 
     const handleDelete = async (warehouseId: string) => {
-        // Your existing delete logic...
-        const updatedWarehouses = warehouses.filter(w => w.id !== warehouseId);
-        setWarehouses(updatedWarehouses);
+        dispatch(deleteWarehouse(warehouseId));
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
         if (mode === 'create') {
-            // Handle creation
             const newWarehouse: Warehouse = {
                 id: `WH${(warehouses.length + 1).toString().padStart(3, '0')}`,
                 name: data.warehouseName,
@@ -158,37 +136,53 @@ export const WarehousesPage: React.FC = () => {
                 inventories: data.inventories,
                 image: data.image instanceof File ? URL.createObjectURL(data.image) : 'default-image.jpg'
             };
-            setWarehouses([...warehouses, newWarehouse]);
+            dispatch(addWarehouse(newWarehouse));
         } else {
-            // Handle update
-            const updatedWarehouses = warehouses.map(warehouse => {
-                if (warehouse.id === selectedWarehouse?.id) {
-                    return {
-                        ...warehouse,
-                        name: data.warehouseName,
-                        location: data.location,
-                        size: data.size,
-                        capacity: data.capacity,
-                        staffMembers: data.staffId,
-                        inventories: data.inventories,
-                        image: data.image instanceof File ? URL.createObjectURL(data.image) : warehouse.image
-                    };
-                }
-                return warehouse;
-            });
-            setWarehouses(updatedWarehouses);
+            const updatedWarehouse: Warehouse = {
+                id: data.warehouseId,
+                name: data.warehouseName,
+                location: data.location,
+                size: data.size,
+                capacity: data.capacity,
+                staffMembers: data.staffId,
+                inventories: data.inventories,
+                image: data.image instanceof File ? URL.createObjectURL(data.image) : 'default-image.jpg'
+            };
+            dispatch(updateWarehouse(updatedWarehouse));
         }
         handleClose();
+    };
+
+    const displayedWarehouses = useMemo(() => {
+        if (!searchQuery) {
+            return warehouses;
+        }
+        return warehouses.filter(warehouse =>
+            warehouse.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            warehouse.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [warehouses, searchQuery]);
+
+    const handleWarehouseSelect = (warehouse: Warehouse | null) => {
+        if (warehouse) {
+            setSearchQuery(warehouse.id);
+        } else {
+            setSearchQuery('');
+        }
     };
 
     return (
         <div className="p-4 space-y-4">
             <TitleComponent title="Warehouse Section" addNew={handleOpen}/>
 
-            <SearchBarComponent title="Search Warehouse By ID" />
+            <SearchBarComponent<Warehouse>
+                title="Search Warehouse By ID"
+                data={warehouses}
+                onSelect={handleWarehouseSelect}
+            />
 
             <TableComponent
-                data={warehouses}
+                data={displayedWarehouses}
                 columns={columns}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
