@@ -8,7 +8,7 @@ import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
 const sampleData: Logs[] = [
     {
         id: "LOG001",
-        warehouse: "Main Warehouse",
+        warehouse: "Main WarehouseModel",
         inventory: "Laptop",
         timestamp: "2021-01-01",
         action: "Create",

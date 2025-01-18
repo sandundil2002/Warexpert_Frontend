@@ -1,16 +1,16 @@
-import {Customer} from "../models/customer.ts";
+import {CustomerModel} from "../models/customerModel.ts";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
-const initialState: Customer[] = [];
+const initialState: CustomerModel[] = [];
 
 export const customerSlice = createSlice({
     name: "customer",
     initialState,
     reducers: {
-        addCustomer: (state, action: PayloadAction<Customer>) => {
+        addCustomer: (state, action: PayloadAction<CustomerModel>) => {
             state.push(action.payload);
         },
-        updateCustomer: (state, action: PayloadAction<Customer>) => {
+        updateCustomer: (state, action: PayloadAction<CustomerModel>) => {
             const index = state.findIndex((customer) => customer.id === action.payload.id);
             if (index !== -1) {
                 state[index] = action.payload;

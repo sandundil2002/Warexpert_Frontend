@@ -22,14 +22,14 @@ export const WarehousesPage: React.FC = () => {
     const fields = [
         {
             id: 'warehouseId',
-            label: 'Warehouse ID',
+            label: 'WarehouseModel ID',
             type: 'text' as const,
             placeholder: 'Auto-generated',
             readOnly: true,
         },
         {
             id: 'warehouseName',
-            label: 'Warehouse Name',
+            label: 'WarehouseModel Name',
             type: 'text' as const,
             required: true
         },
@@ -73,7 +73,7 @@ export const WarehousesPage: React.FC = () => {
         },
         {
             id: 'image',
-            label: 'Warehouse Image',
+            label: 'WarehouseModel Image',
             type: 'file' as const,
             required: true,
             accept: 'image/*'
@@ -173,10 +173,10 @@ export const WarehousesPage: React.FC = () => {
 
     return (
         <div className="p-4 space-y-4">
-            <TitleComponent title="Warehouse Section" addNew={handleOpen}/>
+            <TitleComponent title="WarehouseModel Section" addNew={handleOpen}/>
 
             <SearchBarComponent<Warehouse>
-                title="Search Warehouse By ID"
+                title="Search WarehouseModel By ID"
                 data={warehouses}
                 onSelect={handleWarehouseSelect}
             />
@@ -194,7 +194,7 @@ export const WarehousesPage: React.FC = () => {
             <PopupModalComponent
                 open={open}
                 handleClose={handleClose}
-                title="Warehouse"
+                title="WarehouseModel"
                 fields={fields}
                 onSubmit={handleSubmit}
                 initialData={mode === 'edit' ? {

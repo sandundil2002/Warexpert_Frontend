@@ -22,14 +22,14 @@ export const CustomerPage: React.FC = () => {
     const fields = [
         {
             id: 'customerId',
-            label: 'Customer ID',
+            label: 'CustomerModel ID',
             type: 'text' as const,
             placeholder: 'Auto-generated',
             readOnly: true,
         },
         {
             id: 'customerName',
-            label: 'Customer Name',
+            label: 'CustomerModel Name',
             type: 'text' as const,
             required: true
         },
@@ -127,10 +127,10 @@ export const CustomerPage: React.FC = () => {
     return (
         <>
             <div className="p-4 space-y-4">
-                <TitleComponent  title="Customer Section" addNew={handleOpen} />
+                <TitleComponent  title="CustomerModel Section" addNew={handleOpen} />
 
                 <SearchBarComponent<Customer>
-                    title="Search Customer by ID"
+                    title="Search CustomerModel by ID"
                     data={customers}
                     onSelect={handleCustomerSelect}
                 />
@@ -148,7 +148,7 @@ export const CustomerPage: React.FC = () => {
                 <PopupModalComponent
                     open={open}
                     handleClose={handleClose}
-                    title="Customer"
+                    title="CustomerModel"
                     fields={fields}
                     onSubmit={handleSubmit}
                     initialData={mode === 'edit' ? {

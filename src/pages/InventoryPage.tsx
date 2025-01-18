@@ -1,37 +1,23 @@
 import {Inventory} from "../components/interfaces/inventory.ts";
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {addInventory, deleteInventory, updateInventory} from "../slices/InventorySlice.tsx";
 
-const sampleDate: Inventory[] = [
-    {
-        id: "INV001",
-        name: "Laptop",
-        category: "Electronics",
-        quantity: "100",
-        price: "1000",
-        warehouse: "Main Warehouse",
-        image: "laptop.jpg"
-    },
-    {
-        id: "INV002",
-        name: "Chair",
-        category: "Furniture",
-        quantity: "200",
-        price: "500",
-        warehouse: "South Branch",
-        image: "chair.jpg"
-    }
-];
+interface RootState {
+    inventory: Inventory[];
+}
 
 export const InventoryPage: React.FC = () => {
-
-    const [inventory, setInventory] = useState<Inventory[]>(sampleDate);
+    const inventory = useSelector((state: RootState) => state.inventory);
+    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [selectedInventory, setSelectedInventory] = useState<Inventory | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     const fields = [
         {
@@ -108,7 +94,7 @@ export const InventoryPage: React.FC = () => {
     }
 
     const handleDelete = async (inventoryId: string) => {
-        setInventory(inventory.filter(inventory => inventory.id !== inventoryId));
+        dispatch(deleteInventory(inventoryId));
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -122,40 +108,60 @@ export const InventoryPage: React.FC = () => {
                 warehouse: data.warehouse,
                 image: data.image
             };
-            setInventory([...inventory, newInventory]);
+            dispatch(addInventory(newInventory));
         } else {
-            const updatedInventory = inventory.map(inventory => {
-                if (inventory.id === selectedInventory?.id) {
-                    return {
-                        ...inventory,
-                        name: data.inventoryName,
-                        category: data.category,
-                        quantity: data.quantity,
-                        price: data.price,
-                        warehouse: data.warehouse,
-                        image: data.image
-                    };
-                }
-                return inventory;
-            });
-            setInventory(updatedInventory);
+            const updatedInventory: Inventory = {
+                id: data.inventoryId,
+                name: data.inventoryName,
+                category: data.category,
+                quantity: data.quantity,
+                price: data.price,
+                warehouse: data.warehouse,
+                image: data.image
+            };
+            dispatch(updateInventory(updatedInventory));
         }
         handleClose();
+    }
+
+    const displayedInventory = useMemo(() => {
+        if (!searchQuery) {
+            return inventory;
+        }
+        return inventory.filter((inventory) =>
+            inventory.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            inventory.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [inventory, searchQuery]);
+
+    const handleInventorySelect = (inventory: Inventory | null) => {
+        if (inventory) {
+            setSearchQuery(inventory.id);
+        } else {
+            setSearchQuery('');
+        }
     }
 
     return (
         <>
             <div className="p-4 space-y-4">
                 <TitleComponent title="Inventory Section" addNew={handleOpen}/>
-                <SearchBarComponent title="Search Inventory By Id" />
-                <TableComponent
+
+                <SearchBarComponent<Inventory>
+                    title="Search Inventory By Id"
                     data={inventory}
+                    onSelect={handleInventorySelect}
+                />
+
+                <TableComponent
+                    data={displayedInventory}
                     columns={columns}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     enableSelection={true}
                     onRowSelect={(inventory) => console.log('Selected inventory:', inventory)}
                 />
+
                 <PopupModalComponent
                     open={open}
                     handleClose={handleClose}

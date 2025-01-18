@@ -1,16 +1,16 @@
-import {Warehouse} from "../models/warehouse.ts";
+import {WarehouseModel} from "../models/warehouseModel.ts";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
-const initialState: Warehouse[] = []
+const initialState: WarehouseModel[] = []
 
 const warehouseSlice = createSlice({
     name: "warehouse",
     initialState,
     reducers: {
-        addWarehouse: (state, action: PayloadAction<Warehouse>) => {
+        addWarehouse: (state, action: PayloadAction<WarehouseModel>) => {
             state.push(action.payload);
         },
-        updateWarehouse: (state, action: PayloadAction<Warehouse>) => {
+        updateWarehouse: (state, action: PayloadAction<WarehouseModel>) => {
             const index = state.findIndex((warehouse) => warehouse.id === action.payload.id);
             if (index !== -1) {
                 state[index] = action.payload;
