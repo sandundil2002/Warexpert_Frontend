@@ -1,35 +1,23 @@
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import {Transportation} from "../components/interfaces/transportation.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {addTransportation, deleteTransportation, updateTransportation} from "../slices/TransportationSlice.tsx";
 
-const sampleData: Transportation[] = [
-    {
-        id: "T001",
-        name: "Truck 1",
-        category: "Truck",
-        quantity: "1",
-        warehouse: "WH001",
-        image: "truck1.jpg"
-    },
-    {
-        id: "T002",
-        name: "Van 1",
-        category: "Van",
-        quantity: "1",
-        warehouse: "WH001",
-        image: "van1.jpg"
-    }
-];
+interface RootState {
+    transportation: Transportation[];
+}
 
 export const TransportationPage: React.FC = () => {
-
-    const [transportations, setTransportations] = useState<Transportation[]>(sampleData);
+    const transportations = useSelector((state: RootState) => state.transportation);
+    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [selectedTransportation, setSelectedTransportation] = useState<Transportation | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     const fields = [
         {
@@ -71,6 +59,16 @@ export const TransportationPage: React.FC = () => {
         }
     ];
 
+    const columns: ColumnDef<Transportation>[] = [
+        { id: 'id', label: 'ID', align: 'left' },
+        { id: 'name', label: 'Name', align: 'left' },
+        { id: 'category', label: 'Category', align: 'left' },
+        { id: 'quantity', label: 'Quantity', align: 'left' },
+        { id: 'warehouse', label: 'Warehouse', align: 'left' },
+        { id: 'image', label: 'Image', align: 'left' },
+        { id: 'actions', label: 'Actions', align: 'center' }
+    ];
+
     const handleOpen = () => {
         setMode('create');
         setSelectedTransportation(null);
@@ -89,8 +87,7 @@ export const TransportationPage: React.FC = () => {
     }
 
     const handleDelete = async (transportationsId: string) => {
-        const updatedTransportations = transportations.filter(transportations => transportations.id !== transportationsId);
-        setTransportations(updatedTransportations);
+        dispatch(deleteTransportation(transportationsId));
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -103,44 +100,53 @@ export const TransportationPage: React.FC = () => {
                 warehouse: data.warehouse,
                 image: data.image
             };
-            setTransportations([...transportations, newTransportation]);
+            dispatch(addTransportation(newTransportation));
         } else {
-            const updatedTransportations = transportations.map(transportations => {
-                if (transportations.id === selectedTransportation?.id) {
-                    return {
-                        ...transportations,
-                        name: data.transportationName,
-                        category: data.category,
-                        quantity: data.quantity,
-                        warehouse: data.warehouse,
-                        image: data.image
-                    };
-                }
-                return transportations;
-            });
-            setTransportations(updatedTransportations);
+            const updatedTransportation: Transportation = {
+                id: data.transportationId,
+                name: data.transportationName,
+                category: data.category,
+                quantity: data.quantity,
+                warehouse: data.warehouse,
+                image: data.image
+            };
+            dispatch(updateTransportation(updatedTransportation));
         }
         handleClose()
     }
 
-    const columns: ColumnDef<Transportation>[] = [
-        { id: 'id', label: 'ID', align: 'left' },
-        { id: 'name', label: 'Name', align: 'left' },
-        { id: 'category', label: 'Category', align: 'left' },
-        { id: 'quantity', label: 'Quantity', align: 'left' },
-        { id: 'warehouse', label: 'Warehouse', align: 'left' },
-        { id: 'image', label: 'Image', align: 'left' },
-        { id: 'actions', label: 'Actions', align: 'center' }
-    ];
+    const displayTransportations = useMemo(() => {
+        if (!searchQuery) {
+            return transportations;
+        }
+        return transportations.filter((transportation) =>
+            transportation.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            transportation.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [transportations, searchQuery]);
+
+    const handleTransportationSelect = (transportation: Transportation | null) => {
+        if (transportation) {
+            setSearchQuery(transportation.id);
+        } else {
+            setSearchQuery('');
+        }
+    }
 
     return (
         <>
             <div className="p-4 space-y-4">
                 <TitleComponent title="Transportation Section" addNew={handleOpen} />
-                <SearchBarComponent title="Search Transportation By ID" />
+
+                <SearchBarComponent<Transportation>
+                    title="Search Transportation By ID"
+                    data={transportations}
+                    onSelect={handleTransportationSelect}
+                />
+
                 <TableComponent
                     columns={columns}
-                    data={transportations}
+                    data={displayTransportations}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     enableSelection={true}
