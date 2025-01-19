@@ -1,35 +1,23 @@
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import {Equipment} from "../components/interfaces/equipment.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {addEquipment, deleteEquipment, updateEquipment} from "../slices/EquipmentSlice.tsx";
 
-const sampleData: Equipment[] = [
-    {
-        id: "EQ001",
-        name: "Laptop",
-        category: "IT",
-        quantity: "10",
-        warehouse: "WH001",
-        image: "laptop.jpg"
-    },
-    {
-        id: "EQ002",
-        name: "Forklift",
-        category: "Machinery",
-        quantity: "2",
-        warehouse: "WH001",
-        image: "forklift.jpg"
-    }
-]
+interface RootState {
+    equipment: Equipment[];
+}
 
 export const EquipmentPage: React.FC = () => {
-
-    const [equipments, setEquipments] = useState<Equipment[]>(sampleData);
+    const equipments = useSelector((state: RootState) => state.equipment);
+    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     const fields = [
         {
@@ -71,6 +59,16 @@ export const EquipmentPage: React.FC = () => {
         }
     ];
 
+    const columns: ColumnDef<Equipment>[] = [
+        { id: 'id', label: 'ID', align: 'left' },
+        { id: 'name', label: 'Name', align: 'left' },
+        { id: 'category', label: 'Category', align: 'left' },
+        { id: 'quantity', label: 'Quantity', align: 'left' },
+        { id: 'warehouse', label: 'Warehouse', align: 'left' },
+        { id: 'image', label: 'Image', align: 'left' },
+        { id: 'actions', label: 'Actions', align: 'center' }
+    ]
+
     const handleOpen = () => {
         setMode('create');
         setSelectedEquipment(null);
@@ -89,8 +87,7 @@ export const EquipmentPage: React.FC = () => {
     }
 
     const handleDelete = async (equipmentId: string) => {
-        const updatedEquipments = equipments.filter(equipment => equipment.id !== equipmentId);
-        setEquipments(updatedEquipments);
+        dispatch(deleteEquipment(equipmentId));
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -103,44 +100,53 @@ export const EquipmentPage: React.FC = () => {
                 warehouse: data.warehouse,
                 image: data.image
             }
-            setEquipments([...equipments, newEquipment]);
+            dispatch(addEquipment(newEquipment));
         } else {
-            const updatedEquipments = equipments.map(equipment => {
-                if (equipment.id === selectedEquipment?.id) {
-                    return {
-                        ...equipment,
-                        name: data.equipmentName,
-                        category: data.category,
-                        quantity: data.quantity,
-                        warehouse: data.warehouse,
-                        image: data.image
-                    }
-                }
-                return equipment;
-            });
-            setEquipments(updatedEquipments);
+            const updatedEquipment: Equipment = {
+                id: data.equipmentId,
+                name: data.equipmentName,
+                category: data.category,
+                quantity: data.quantity,
+                warehouse: data.warehouse,
+                image: data.image
+            }
+            dispatch(updateEquipment(updatedEquipment));
         }
         handleClose();
     }
 
-    const columns: ColumnDef<Equipment>[] = [
-        { id: 'id', label: 'ID', align: 'left' },
-        { id: 'name', label: 'Name', align: 'left' },
-        { id: 'category', label: 'Category', align: 'left' },
-        { id: 'quantity', label: 'Quantity', align: 'left' },
-        { id: 'warehouse', label: 'Warehouse', align: 'left' },
-        { id: 'image', label: 'Image', align: 'left' },
-        { id: 'actions', label: 'Actions', align: 'center' }
-    ]
+    const displayedEquipments = useMemo(() => {
+        if (!searchQuery) {
+            return equipments;
+        }
+        return equipments.filter((equipment) =>
+            equipment.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            equipment.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [equipments, searchQuery]);
+
+    const handleEquipmentSelect = (equipment: Equipment | null) => {
+        if (equipment) {
+            setSearchQuery(equipment.id);
+        } else {
+            setSearchQuery('');
+        }
+    }
 
     return (
         <>
             <div className="p-4 space-y-4">
                 <TitleComponent title="Equipment Section" addNew={handleOpen}/>
-                <SearchBarComponent title="Search Equipment By ID"/>
+
+                <SearchBarComponent<Equipment>
+                    title="Search Equipment By ID"
+                    data={equipments}
+                    onSelect={handleEquipmentSelect}
+                />
+
                 <TableComponent
                     columns={columns}
-                    data={equipments}
+                    data={displayedEquipments}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     enableSelection={true}

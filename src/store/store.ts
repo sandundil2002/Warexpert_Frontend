@@ -5,6 +5,7 @@ import inventorySlice from "../slices/InventorySlice.tsx";
 import employeeSlice from "../slices/SearchSlice.tsx";
 import logSlice from "../slices/LogSlice.tsx";
 import transportationSlice from "../slices/TransportationSlice.tsx";
+import equipmentSlice from "../slices/EquipmentSlice.tsx";
 
 export const store = configureStore({
     reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
         employee: employeeSlice,
         log: logSlice,
         transportation: transportationSlice,
+        equipment: equipmentSlice,
     },
 });
