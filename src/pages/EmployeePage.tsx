@@ -1,36 +1,22 @@
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import {Employee} from "../components/interfaces/employee.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {addEmployee, deleteEmployee, updateEmployee} from "../slices/SearchSlice.tsx";
 
-const sampleData: Employee[] = [
-    {
-        id: "EMP001",
-        name: "John Doe",
-        email: "abc@gmail.com",
-        mobile: "1234567890",
-        role: "Manager",
-        address: "123 Storage St",
-        image: "john.jpg"
-    },
-    {
-        id: "EMP002",
-        name: "Jane Doe",
-        email: "xyz@gmail.com",
-        mobile: "0987654321",
-        role: "Staff",
-        address: "456 Depot Ave",
-        image: "jane.jpg"
-    }
-];
-
+interface RootState {
+    employee: Employee[];
+}
 export const EmployeePage:React.FC = () => {
-    const [employees, setEmployees] = useState<Employee[]>(sampleData);
+    const employees = useSelector((state: RootState) => state.employee);
+    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     const fields = [
         {
@@ -78,6 +64,17 @@ export const EmployeePage:React.FC = () => {
         }
     ];
 
+    const columns: ColumnDef<Employee>[] = [
+        {id: 'id', label: 'ID'},
+        {id: 'name', label: 'Name'},
+        {id: 'email', label: 'Email'},
+        {id: 'mobile', label: 'Mobile'},
+        {id: 'role', label: 'Role'},
+        {id: 'address', label: 'Address'},
+        {id: 'image', label: 'Image'},
+        { id: 'actions', label: 'Actions', align: 'center' }
+    ];
+
     const handleOpen = () => {
         setMode('create');
         setSelectedEmployee(null);
@@ -96,8 +93,7 @@ export const EmployeePage:React.FC = () => {
     }
 
     const handleDelete = async (employeeId: string) => {
-        const updatedEmployees = employees.filter(employee => employee.id !== employeeId);
-        setEmployees(updatedEmployees);
+        dispatch(deleteEmployee(employeeId));
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -111,46 +107,53 @@ export const EmployeePage:React.FC = () => {
                 address: data.address,
                 image: data.image
             };
-            setEmployees([...employees, newEmployee]);
+            dispatch(addEmployee(newEmployee));
         } else {
-            const updatedEmployees = employees.map(employee => {
-                if (employee.id === selectedEmployee?.id) {
-                    return {
-                        ...employee,
-                        name: data.employeeName,
-                        email: data.email,
-                        mobile: data.mobile,
-                        role: data.role,
-                        address: data.address,
-                        image: data.image
-                    };
-                }
-                return employee;
-            });
-            setEmployees(updatedEmployees);
+            const updatedEmployee: Employee = {
+                id: data.employeeId,
+                name: data.employeeName,
+                email: data.email,
+                mobile: data.mobile,
+                role: data.role,
+                address: data.address,
+                image: data.image
+            };
+            dispatch(updateEmployee(updatedEmployee));
         }
-        setOpen(false);
-        setSelectedEmployee(null);
+        handleClose();
     }
 
-    const columns: ColumnDef<Employee>[] = [
-        {id: 'id', label: 'ID'},
-        {id: 'name', label: 'Name'},
-        {id: 'email', label: 'Email'},
-        {id: 'mobile', label: 'Mobile'},
-        {id: 'role', label: 'Role'},
-        {id: 'address', label: 'Address'},
-        {id: 'image', label: 'Image'},
-        { id: 'actions', label: 'Actions', align: 'center' }
-    ];
+    const displayEmployees = useMemo(() => {
+        if (!searchQuery) {
+            return employees;
+        }
+        return employees.filter((employee) =>
+            employee.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            employee.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [employees, searchQuery]);
+
+    const handleEmployeeSelect = (employee: Employee | null) => {
+        if (employee) {
+            setSearchQuery(employee.id);
+        } else {
+            setSearchQuery('');
+        }
+    }
 
     return (
         <>
             <div className="p-4 space-y-4">
                 <TitleComponent title="Employee Section" addNew={handleOpen} />
-                <SearchBarComponent title="Search Employee By ID" />
-                <TableComponent
+
+                <SearchBarComponent<Employee>
+                    title="Search Employee By ID"
                     data={employees}
+                    onSelect={handleEmployeeSelect}
+                />
+
+                <TableComponent
+                    data={displayEmployees}
                     columns={columns}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
