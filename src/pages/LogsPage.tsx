@@ -1,35 +1,23 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {Logs} from "../components/interfaces/logs.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {addLog, deleteLog, updateLog} from "../slices/LogSlice.tsx";
 
-const sampleData: Logs[] = [
-    {
-        id: "LOG001",
-        warehouse: "Main WarehouseModel",
-        inventory: "Laptop",
-        timestamp: "2021-01-01",
-        action: "Create",
-        user: "Admin"
-    },
-    {
-        id: "LOG002",
-        warehouse: "South Branch",
-        inventory: "Chair",
-        timestamp: "2021-01-02",
-        action: "Update",
-        user: "Admin"
-    }
-];
+interface RootState {
+    log: Logs[];
+}
 
 export const LogsPage: React.FC = () => {
-
-    const [logs, setLogs] = useState<Logs[]>(sampleData);
+    const logs = useSelector((state: RootState) => state.log);
+    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [selectedLog, setSelectedLog] = useState<Logs | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     const fields = [
         {
@@ -71,6 +59,16 @@ export const LogsPage: React.FC = () => {
         }
     ];
 
+    const columns: ColumnDef<Logs>[] = [
+        {id: 'id', label: 'ID'},
+        {id: 'warehouse', label: 'Warehouse'},
+        {id: 'inventory', label: 'Inventory'},
+        {id: 'timestamp', label: 'Timestamp'},
+        {id: 'action', label: 'Action'},
+        {id: 'user', label: 'User'},
+        { id: 'actions', label: 'Actions', align: 'center' }
+    ];
+
     const handleOpen = () => {
         setMode('create');
         setSelectedLog(null);
@@ -89,60 +87,71 @@ export const LogsPage: React.FC = () => {
     }
 
     const handleDelete = async (logId: string) => {
-        const updatedLogs = logs.filter(logs => logs.id !== logId);
-        setLogs(updatedLogs);
+        dispatch(deleteLog(logId));
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
         if (mode === 'create') {
-            setLogs([...logs, {
-                id: `LOG00${logs.length + 1}`,
+            const newLog: Logs = {
+                id: `LOG-${logs.length + 1}`,
                 warehouse: data.warehouse,
                 inventory: data.inventory,
                 timestamp: data.timestamp,
                 action: data.action,
                 user: data.user
-            }]);
+            };
+            dispatch(addLog(newLog));
         } else {
-            setLogs(logs.map(logs => {
-                if (logs.id === selectedLog?.id) {
-                    return {
-                        ...logs,
-                        warehouse: data.warehouse,
-                        inventory: data.inventory,
-                        timestamp: data.timestamp,
-                        action: data.action,
-                        user: data.user
-                    };
-                }
-                return logs;
-            }));
+            const updatedLog: Logs = {
+                id: data.logId,
+                warehouse: data.warehouse,
+                inventory: data.inventory,
+                timestamp: data.timestamp,
+                action: data.action,
+                user: data.user
+            };
+            dispatch(updateLog(updatedLog));
         }
         handleClose();
     }
 
-    const columns: ColumnDef<Logs>[] = [
-        {id: 'id', label: 'ID'},
-        {id: 'warehouse', label: 'Warehouse'},
-        {id: 'inventory', label: 'Inventory'},
-        {id: 'timestamp', label: 'Timestamp'},
-        {id: 'action', label: 'Action'},
-        {id: 'user', label: 'User'},
-        { id: 'actions', label: 'Actions', align: 'center' }
-    ];
+    const displayLogs = useMemo(() => {
+        if (!searchQuery) {
+            return logs;
+        }
+        return logs.filter((log) =>
+            log.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            log.warehouse.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [logs, searchQuery]);
+
+    const handleLogSelect = (log: Logs | null) => {
+        if (log) {
+            setSearchQuery(log.id);
+        } else {
+            setSearchQuery('');
+        }
+    }
 
     return (
         <>
             <div className="p-4 space-y-4">
                 <TitleComponent title="Logs Section" addNew={handleOpen} />
-                <SearchBarComponent title="Search Logs By ID" />
+
+                <SearchBarComponent<Logs>
+                    title="Search Logs By ID"
+                    data={logs}
+                    onSelect={handleLogSelect}
+                />
+
                 <TableComponent
                     columns={columns}
-                    data={logs}
+                    data={displayLogs}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     enableSelection={true}
                 />
+
                 <PopupModalComponent
                     title="Logs"
                     open={open}

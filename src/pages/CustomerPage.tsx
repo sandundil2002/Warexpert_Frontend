@@ -141,8 +141,6 @@ export const CustomerPage: React.FC = () => {
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     enableSelection={true}
-                    onRowSelect={(customers) => console.log('Selected customers:', customers)}
-                    rowsPerPage={5}
                 />
 
                 <PopupModalComponent
