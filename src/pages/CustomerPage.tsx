@@ -1,69 +1,85 @@
-import {TitleComponent} from "../components/common/TitleComponent.tsx";
-import React, {useMemo, useState} from "react";
-import {Customer} from "../components/interfaces/customer.ts";
-import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
-import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
-import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
-import {useDispatch, useSelector} from "react-redux";
-import {addCustomer, deleteCustomer, updateCustomer} from "../slices/CustomerSlice.tsx";
+import React, {useEffect, useMemo, useState} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Customer } from "../components/interfaces/customer";
+import { TitleComponent } from "../components/common/TitleComponent";
+import { SearchBarComponent } from "../components/common/SearchBarComponent";
+import { ColumnDef, TableComponent } from "../components/common/TableComponent";
+import { PopupModalComponent } from "../components/popup/PopupModalComponent";
+import {addCustomer, deleteCustomer, getCustomers, updateCustomer} from "../slices/CustomerSlice";
+import {RootState} from "../store/store.ts";
+import {AnyAction, ThunkDispatch} from "@reduxjs/toolkit";
 
-interface RootState {
-    customer: Customer[];
+interface Field {
+    id: string;
+    label: string;
+    type: "text" | "email";
+    placeholder?: string;
+    required?: boolean;
+    readOnly?: boolean;
 }
 
 export const CustomerPage: React.FC = () => {
+    const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
     const customers = useSelector((state: RootState) => state.customer);
-    const dispatch = useDispatch();
+
     const [open, setOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-    const [mode, setMode] = useState<'create' | 'edit'>('create');
-    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [mode, setMode] = useState<"create" | "edit">("create");
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const fields = [
+    useEffect(() => {
+        if(!customers.length) {
+            dispatch(getCustomers());
+        }
+    }, [dispatch, customers.length]);
+
+    const fields: Field[] = [
         {
-            id: 'customerId',
-            label: 'CustomerModel ID',
-            type: 'text' as const,
-            placeholder: 'Auto-generated',
+            id: "customerId",
+            label: "Customer ID",
+            type: "text",
+            placeholder: "Auto-generated",
             readOnly: true,
         },
         {
-            id: 'customerName',
-            label: 'CustomerModel Name',
-            type: 'text' as const,
-            required: true
+            id: "customerName",
+            label: "Customer Name",
+            type: "text",
+            required: true,
         },
         {
-            id: 'address',
-            label: 'Address',
-            type: 'text' as const,
-            required: true
+            id: "address",
+            label: "Address",
+            type: "text",
+            required: true,
         },
         {
-            id: 'mobile',
-            label: 'Mobile',
-            type: 'text' as const,
-            required: true
+            id: "mobile",
+            label: "Mobile",
+            type: "text",
+            required: true,
         },
         {
-            id: 'email',
-            label: 'Email',
-            type: 'email' as const,
-            required: true
-        }
+            id: "email",
+            label: "Email",
+            type: "email",
+            required: true,
+        },
     ];
 
     const columns: ColumnDef<Customer>[] = [
-        { id: 'id', label: 'ID', align: 'left' },
-        { id: 'name', label: 'Name', align: 'left' },
-        { id: 'address', label: 'Address', align: 'left' },
-        { id: 'mobile', label: 'Mobile', align: 'right' },
-        { id: 'email', label: 'Email', align: 'right' },
-        { id: 'actions', label: 'Actions', align: 'center' }
+        { id: "id", label: "ID", align: "center" },
+        { id: "name", label: "Name", align: "center" },
+        { id: "address", label: "Address", align: "center" },
+        { id: "mobile", label: "Mobile", align: "center" },
+        { id: "email", label: "Email", align: "center" },
+        { id: "createdAt", label: "Created", align: "center" },
+        { id: "updatedAt", label: "Updated", align: "center" },
+        { id: "actions", label: "Actions", align: "center" },
     ];
 
     const handleOpen = () => {
-        setMode('create');
+        setMode("create");
         setSelectedCustomer(null);
         setOpen(true);
     };
@@ -73,18 +89,18 @@ export const CustomerPage: React.FC = () => {
         setSelectedCustomer(null);
     };
 
-    const handleEdit = (customers: Customer) => {
-        setMode('edit');
-        setSelectedCustomer(customers);
+    const handleEdit = (customer: Customer) => {
+        setMode("edit");
+        setSelectedCustomer(customer);
         setOpen(true);
     };
 
     const handleDelete = async (customerId: string) => {
-        dispatch(deleteCustomer(customerId));
+        await dispatch(deleteCustomer(customerId));
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
-        if (mode === 'create') {
+        if (mode === "create") {
             const newCustomer: Customer = {
                 id: `WH00${customers.length + 1}`,
                 name: data.customerName,
@@ -92,27 +108,27 @@ export const CustomerPage: React.FC = () => {
                 mobile: data.mobile,
                 email: data.email,
             };
-            dispatch(addCustomer(newCustomer));
-        } else {
+            await dispatch(addCustomer(newCustomer));
+        } else if (selectedCustomer) {
             const updatedCustomer: Customer = {
-                id: data.customerId,
+                id: selectedCustomer.id,
                 name: data.customerName,
                 address: data.address,
                 mobile: data.mobile,
                 email: data.email,
             };
-            dispatch(updateCustomer(updatedCustomer));
+            await dispatch(updateCustomer({ id: selectedCustomer.id, customer: updatedCustomer}));
         }
         handleClose();
-    }
+    };
 
     const displayCustomers = useMemo(() => {
-        if (!searchQuery) {
-            return customers;
-        }
-        return customers.filter((customer) =>
-            customer.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            customer.name.toLowerCase().includes(searchQuery.toLowerCase())
+        if (!searchQuery) return customers;
+
+        return customers.filter(
+            (customer) =>
+                customer.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                customer.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [customers, searchQuery]);
 
@@ -120,45 +136,44 @@ export const CustomerPage: React.FC = () => {
         if (customer) {
             setSearchQuery(customer.id);
         } else {
-            setSearchQuery('');
+            setSearchQuery("");
         }
-    }
+    };
 
     return (
-        <>
-            <div className="p-4 space-y-4">
-                <TitleComponent  title="CustomerModel Section" addNew={handleOpen} />
-
-                <SearchBarComponent<Customer>
-                    title="Search CustomerModel by ID"
-                    data={customers}
-                    onSelect={handleCustomerSelect}
-                />
-
-                <TableComponent
-                    data={displayCustomers}
-                    columns={columns}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    enableSelection={true}
-                />
-
-                <PopupModalComponent
-                    open={open}
-                    handleClose={handleClose}
-                    title="CustomerModel"
-                    fields={fields}
-                    onSubmit={handleSubmit}
-                    initialData={mode === 'edit' ? {
-                        customerId: selectedCustomer?.id,
-                        customerName: selectedCustomer?.name,
-                        address: selectedCustomer?.address,
-                        mobile: selectedCustomer?.mobile,
-                        email: selectedCustomer?.email
-                    } : undefined }
-                    mode={mode}
-                />
-            </div>
-        </>
+        <div className="p-4 space-y-4">
+            <TitleComponent title="Customer Section" addNew={handleOpen} />
+            <SearchBarComponent<Customer>
+                title="Search Customer by ID"
+                data={customers}
+                onSelect={handleCustomerSelect}
+            />
+            <TableComponent
+                data={displayCustomers}
+                columns={columns}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                enableSelection={true}
+            />
+            <PopupModalComponent
+                open={open}
+                handleClose={handleClose}
+                title="Customer"
+                fields={fields}
+                onSubmit={handleSubmit}
+                initialData={
+                    mode === "edit"
+                        ? {
+                            customerId: selectedCustomer?.id,
+                            customerName: selectedCustomer?.name,
+                            address: selectedCustomer?.address,
+                            mobile: selectedCustomer?.mobile,
+                            email: selectedCustomer?.email,
+                        }
+                        : undefined
+                }
+                mode={mode}
+            />
+        </div>
     );
 };
