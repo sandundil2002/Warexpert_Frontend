@@ -18,8 +18,8 @@ interface Field {
 }
 
 export const CustomerPage: React.FC = () => {
-    const dispatch = useDispatch<AppDispatch>();
     const customers = useSelector((state: RootState) => state.customer);
+    const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
     const [mode, setMode] = useState<"create" | "edit">("create");
