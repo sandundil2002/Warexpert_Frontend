@@ -6,8 +6,7 @@ import { SearchBarComponent } from "../components/common/SearchBarComponent";
 import { ColumnDef, TableComponent } from "../components/common/TableComponent";
 import { PopupModalComponent } from "../components/popup/PopupModalComponent";
 import {addCustomer, deleteCustomer, getCustomers, updateCustomer} from "../slices/CustomerSlice";
-import {RootState} from "../store/store.ts";
-import {AnyAction, ThunkDispatch} from "@reduxjs/toolkit";
+import {AppDispatch, RootState} from "../store/store.ts";
 
 interface Field {
     id: string;
@@ -19,9 +18,8 @@ interface Field {
 }
 
 export const CustomerPage: React.FC = () => {
-    const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
+    const dispatch = useDispatch<AppDispatch>();
     const customers = useSelector((state: RootState) => state.customer);
-
     const [open, setOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
     const [mode, setMode] = useState<"create" | "edit">("create");
@@ -102,7 +100,7 @@ export const CustomerPage: React.FC = () => {
     const handleSubmit = async (data: Record<string, any>) => {
         if (mode === "create") {
             const newCustomer: Customer = {
-                id: `WH00${customers.length + 1}`,
+                id: `C00${customers.length + 1}`,
                 name: data.customerName,
                 address: data.address,
                 mobile: data.mobile,
@@ -161,17 +159,13 @@ export const CustomerPage: React.FC = () => {
                 title="Customer"
                 fields={fields}
                 onSubmit={handleSubmit}
-                initialData={
-                    mode === "edit"
-                        ? {
+                initialData={mode === "edit" ? {
                             customerId: selectedCustomer?.id,
                             customerName: selectedCustomer?.name,
                             address: selectedCustomer?.address,
                             mobile: selectedCustomer?.mobile,
                             email: selectedCustomer?.email,
-                        }
-                        : undefined
-                }
+                        } : undefined }
                 mode={mode}
             />
         </div>

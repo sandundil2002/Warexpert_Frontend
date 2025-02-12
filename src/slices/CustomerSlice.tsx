@@ -6,7 +6,7 @@ export const initialState : Customer[] = [];
 
 const api = axios.create({
     baseURL : "http://localhost:3000/customer"
-})
+});
 
 export const getCustomers = createAsyncThunk<Customer[]>(
     "customer/getCustomers",
@@ -59,7 +59,7 @@ const customerSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getCustomers.pending, () => {
-                console.log("Pending get customer:");
+                console.log("Pending get customers");
             })
             .addCase(getCustomers.fulfilled, (state, action) => {
                 action.payload.map((customer:Customer) => {
@@ -87,10 +87,9 @@ const customerSlice = createSlice({
                 console.log("Pending update customer:");
             })
             .addCase(updateCustomer.fulfilled, (state, action) => {
-                console.log("Update customer payload:", action.payload); // Log the payload
                 const index = state.findIndex(customer => customer.id === action.payload.id);
                 if (index !== -1) {
-                    state[index] = action.payload; // Directly mutate the state
+                    state[index] = action.payload;
                 }
             })
             .addCase(updateCustomer.rejected, () => {

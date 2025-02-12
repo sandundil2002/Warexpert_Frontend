@@ -7,7 +7,5 @@ export interface Warehouse extends TableItem, SearchableItem {
     location: string;
     size: string;
     capacity: string;
-    staffMembers: string;
-    inventories: string;
     image: string;
 }

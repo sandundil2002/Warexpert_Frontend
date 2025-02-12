@@ -1,106 +1,104 @@
-import React, {useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { PopupModalComponent } from "../components/popup/PopupModalComponent.tsx";
 import { TitleComponent } from "../components/common/TitleComponent";
 import { SearchBarComponent } from "../components/common/SearchBarComponent";
 import { ColumnDef, TableComponent } from "../components/common/TableComponent";
 import { Warehouse } from "../components/interfaces/warehouse";
 import {useDispatch, useSelector} from "react-redux";
-import {addWarehouse, deleteWarehouse, updateWarehouse} from "../slices/WarehouseSlice.tsx";
+import {addWarehouse, deleteWarehouse, getWarehouses, updateWarehouse} from "../slices/WarehouseSlice.tsx";
+import {AppDispatch, RootState} from "../store/store.ts";
 
-interface RootState {
-    warehouse: Warehouse[];
+interface Field {
+    id: string;
+    label: string;
+    type: "text" | "number" | "email" | "select" | "file";
+    placeholder?: string;
+    required?: boolean;
+    readOnly?: boolean;
 }
 
 export const WarehousesPage: React.FC = () => {
+    const dispatch = useDispatch<AppDispatch>();
     const warehouses = useSelector((state: RootState) => state.warehouse);
-    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<Warehouse | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
     const [searchQuery, setSearchQuery] = useState<string>('');
 
-    const fields = [
+    useEffect(() => {
+        if (!warehouses.length) {
+            dispatch(getWarehouses());
+        }
+    }, [dispatch, warehouses.length])
+
+    const fields: Field[] = [
         {
             id: 'warehouseId',
             label: 'WarehouseModel ID',
-            type: 'text' as const,
+            type: 'text',
             placeholder: 'Auto-generated',
             readOnly: true,
         },
         {
             id: 'warehouseName',
-            label: 'WarehouseModel Name',
-            type: 'text' as const,
+            label: 'Warehouse Name',
+            type: 'text',
             required: true
         },
         {
             id: 'location',
             label: 'Location',
-            type: 'text' as const,
+            type: 'text',
             required: true
         },
         {
             id: 'size',
             label: 'Size',
-            type: 'number' as const,
+            type: 'number',
             required: true
         },
         {
             id: 'capacity',
             label: 'Capacity',
-            type: 'number' as const,
+            type: 'number',
             required: true
-        },
-        {
-            id: 'staffId',
-            label: 'Staff ID',
-            type: 'select' as const,
-            required: true,
-            options: [
-                { value: '1', label: 'Staff 1' },
-                { value: '2', label: 'Staff 2' }
-            ]
-        },
-        {
-            id: 'inventories',
-            label: 'Inventories',
-            type: 'select' as const,
-            required: true,
-            options: [
-                { value: 'electronics', label: 'Electronics' },
-                { value: 'furniture', label: 'Furniture' }
-            ]
         },
         {
             id: 'image',
             label: 'WarehouseModel Image',
-            type: 'file' as const,
+            type: 'file',
             required: true,
-            accept: 'image/*'
         }
     ];
 
     const columns: ColumnDef<Warehouse>[] = [
-        { id: 'id', label: 'ID', align: 'left' },
-        { id: 'name', label: 'Name', align: 'left' },
-        { id: 'location', label: 'Location', align: 'left' },
-        { id: 'size', label: 'Size', align: 'right' },
-        { id: 'capacity', label: 'Capacity', align: 'right' },
-        { id: 'staffMembers', label: 'Staff Members', align: 'right' },
-        { id: 'inventories', label: 'Inventories', align: 'left' },
+        { id: 'id', label: 'ID', align: 'center' },
+        { id: 'name', label: 'Name', align: 'center' },
+        { id: 'location', label: 'Location', align: 'center' },
+        { id: 'size', label: 'Size', align: 'center' },
+        { id: 'capacity', label: 'Capacity', align: 'center' },
+        { id: 'createdAt', label: 'Created', align: 'center' },
         {
             id: 'image',
             label: 'Image',
-            align: 'left',
-            render: (warehouse: Warehouse) => (
-                <img
-                    src={warehouse.image}
-                    alt={`${warehouse.name} image`}
-                    className="w-10 h-10 rounded object-cover"
-                />
-            )
+            align: 'center',
+            render: (warehouse: Warehouse) => {
+                const base64Image = warehouse.image
+                    ? (warehouse.image.startsWith?.('data:image')
+                        ? warehouse.image
+                        : `data:image/png;base64,${warehouse.image}`)
+                    : 'default-image.jpg';
+
+                return (
+                    <img
+                        src={base64Image}
+                        alt={`${warehouse.name} image`}
+                        className="w-16 h-16 rounded object-cover"
+                    />
+                );
+            },
         },
-        { id: 'actions', label: 'Actions', align: 'center' }
+        { id: 'actions', label: 'Actions', align: 'center' },
     ];
 
     const handleOpen = () => {
@@ -121,43 +119,58 @@ export const WarehousesPage: React.FC = () => {
     };
 
     const handleDelete = async (warehouseId: string) => {
-        dispatch(deleteWarehouse(warehouseId));
+        await dispatch(deleteWarehouse(warehouseId));
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
-        if (mode === 'create') {
-            const newWarehouse: Warehouse = {
-                id: `WH${(warehouses.length + 1).toString().padStart(3, '0')}`,
-                name: data.warehouseName,
-                location: data.location,
-                size: data.size,
-                capacity: data.capacity,
-                staffMembers: data.staffId,
-                inventories: data.inventories,
-                image: data.image instanceof File ? URL.createObjectURL(data.image) : 'default-image.jpg'
+        let imageBase64 = '';
+
+        if (data.image && data.image instanceof File) {
+            const readFileAsBase64 = (file: File): Promise<string> => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
             };
-            dispatch(addWarehouse(newWarehouse));
+
+            try {
+                imageBase64 = await readFileAsBase64(data.image);
+                console.log("Converted Image Base64:", imageBase64);
+            } catch (error) {
+                console.error("Error reading file:", error);
+                alert("Failed to process the image. Please try again.");
+                return;
+            }
         } else {
-            const updatedWarehouse: Warehouse = {
-                id: data.warehouseId,
-                name: data.warehouseName,
-                location: data.location,
-                size: data.size,
-                capacity: data.capacity,
-                staffMembers: data.staffId,
-                inventories: data.inventories,
-                image: data.image instanceof File ? URL.createObjectURL(data.image) : 'default-image.jpg'
-            };
-            dispatch(updateWarehouse(updatedWarehouse));
+            console.log("No valid file received. Using existing image.");
+            imageBase64 = selectedWarehouse?.image || '';
         }
+
+        const warehouseData: Warehouse = {
+            id: mode === 'create' ? `W00${warehouses.length + 1}` : selectedWarehouse?.id || '',
+            name: data.warehouseName,
+            location: data.location,
+            size: data.size,
+            capacity: data.capacity,
+            image: imageBase64,
+        };
+
+        if (mode === 'create') {
+            await dispatch(addWarehouse(warehouseData));
+        } else if (selectedWarehouse) {
+            await dispatch(updateWarehouse({ id: selectedWarehouse.id, warehouse: warehouseData }));
+        }
+
         handleClose();
     };
 
     const displayedWarehouses = useMemo(() => {
-        if (!searchQuery) {
-            return warehouses;
-        }
-        return warehouses.filter(warehouse =>
+        if (!searchQuery) return warehouses;
+
+        return warehouses.filter(
+            warehouse =>
             warehouse.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
             warehouse.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -187,8 +200,6 @@ export const WarehousesPage: React.FC = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 enableSelection={true}
-                onRowSelect={(warehouse) => console.log('Selected warehouse:', warehouse)}
-                rowsPerPage={5}
             />
 
             <PopupModalComponent
@@ -206,7 +217,7 @@ export const WarehousesPage: React.FC = () => {
                     staffId: selectedWarehouse?.staffMembers,
                     inventories: selectedWarehouse?.inventories,
                     image: selectedWarehouse?.image
-                } : undefined}
+                } : undefined }
                 mode={mode}
             />
         </div>

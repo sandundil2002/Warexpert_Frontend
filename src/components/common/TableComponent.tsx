@@ -20,7 +20,6 @@ export interface TableItem {
     [key: string]: string;
 }
 
-// Interface for column definition
 export interface ColumnDef<T extends TableItem> {
     id: keyof T | 'actions';
     label: string;
@@ -40,7 +39,6 @@ export interface GenericTableProps<T extends TableItem> {
 }
 
 export const TableComponent = <T extends TableItem>({data, columns, onEdit, onDelete, rowsPerPage = 5, enableSelection = true, onRowSelect, customActions}: GenericTableProps<T>) => {
-
     const [page] = useState(0);
     const [selectedRow, setSelectedRow] = useState<string | null>(null);
     const isSelected = (id: string) => selectedRow === id;
@@ -89,17 +87,20 @@ export const TableComponent = <T extends TableItem>({data, columns, onEdit, onDe
             );
         }
 
+        const cellValue = item[column.id] ?? "N/A";
+
         if (column.render) {
+            const renderedValue = column.render(item);
             return (
                 <TableCell key={column.id.toString()} align={column.align}>
-                    {column.render(item)}
+                    {renderedValue ?? "N/A"}
                 </TableCell>
             );
         }
 
         return (
             <TableCell key={column.id.toString()} align={column.align}>
-                {item[column.id]}
+                {cellValue}
             </TableCell>
         );
     };
