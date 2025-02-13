@@ -65,7 +65,7 @@ export const WarehousesPage: React.FC = () => {
         },
         {
             id: 'image',
-            label: 'WarehouseModel Image',
+            label: 'Warehouse Image',
             type: 'file',
             required: true,
         }

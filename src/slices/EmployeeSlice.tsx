@@ -67,7 +67,7 @@ const employeeSlice = createSlice({
                 })
             })
             .addCase(getEmployees.rejected, () => {
-                console.log("Rejected add employee");
+                console.log("Error fetching employee");
             })
 
         builder

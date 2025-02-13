@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addEmployee, deleteEmployee, getEmployees, updateEmployee } from "../slices/EmployeeSlice.tsx";
 import { AppDispatch, RootState } from "../store/store.ts";
 import { Warehouse } from "../components/interfaces/warehouse.ts";
-import {getWarehouses} from "../slices/WarehouseSlice.tsx"; // Assuming you have a Warehouse interface
+import {getWarehouses} from "../slices/WarehouseSlice.tsx";
 
 interface Field {
     id: string;
@@ -22,7 +22,7 @@ interface Field {
 
 export const EmployeePage: React.FC = () => {
     const employees = useSelector((state: RootState) => state.employee);
-    const warehouses = useSelector((state: RootState) => state.warehouse); // Assuming you have a warehouse slice
+    const warehouses = useSelector((state: RootState) => state.warehouse);
     const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -150,7 +150,6 @@ export const EmployeePage: React.FC = () => {
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
-
         if (mode === 'create') {
             const newEmployee: Employee = {
                 id: `EMP00${employees.length + 1}`,
