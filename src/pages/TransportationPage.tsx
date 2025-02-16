@@ -1,71 +1,115 @@
-import React, {useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {Transportation} from "../components/interfaces/transportation.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {addTransportation, deleteTransportation, updateTransportation} from "../slices/TransportationSlice.tsx";
+import {
+    addTransportation,
+    deleteTransportation,
+    getTransportations,
+    updateTransportation
+} from "../slices/TransportationSlice.tsx";
+import {AppDispatch, RootState} from "../store/store.ts";
+import {getEmployees} from "../slices/EmployeeSlice.tsx";
+import {Employee} from "../components/interfaces/employee.ts";
 
-interface RootState {
-    transportation: Transportation[];
+interface Field {
+    id: string;
+    label: string;
+    type: "text" | "select";
+    placeholder?: string;
+    required?: boolean;
+    readOnly?: boolean;
+    options?: { value: string; label: string }[];
 }
 
 export const TransportationPage: React.FC = () => {
     const transportations = useSelector((state: RootState) => state.transportation);
-    const dispatch = useDispatch();
+    const employees = useSelector((state: RootState) => state.employee);
+    const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [selectedTransportation, setSelectedTransportation] = useState<Transportation | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
     const [searchQuery, setSearchQuery] = useState<string>('');
 
-    const fields = [
+    useEffect(() => {
+        if (!transportations.length) {
+            dispatch(getTransportations());
+        }
+    }, [dispatch, transportations.length]);
+
+    useEffect(() => {
+        if (!employees.length) {
+            dispatch(getEmployees());
+        }
+    }, [dispatch, employees.length]);
+
+    const fields: Field[] = [
         {
             id: 'transportationId',
             label: 'Transportation ID',
-            type: 'text' as const,
+            type: 'text',
             placeholder: 'Auto-generated',
             readOnly: true,
         },
         {
-            id: 'transportationName',
-            label: 'Transportation Name',
-            type: 'text' as const,
+            id: 'type',
+            label: 'Transportation Type',
+            type: 'select',
+            required: true,
+            options : [
+                { value: 'Truck', label: 'Truck' },
+                { value: 'Van', label: 'Van' },
+                { value: 'Car', label: 'Car' },
+                { value: 'Bike', label: 'Bike' },
+                { value: 'Other', label: 'Other' }
+            ]
+        },
+        {
+            id: 'capacity',
+            label: 'Capacity',
+            type: 'text',
             required: true
         },
         {
-            id: 'category',
-            label: 'Category',
-            type: 'text' as const,
+            id: 'numberPlate',
+            label: 'Number Plate',
+            type: 'text',
             required: true
         },
         {
-            id: 'quantity',
-            label: 'Quantity',
-            type: 'text' as const,
-            required: true
+            id: 'status',
+            label: 'Status',
+            type: 'select',
+            required: true,
+            options: [
+                { value: 'AVAILABLE', label: 'Available' },
+                { value: 'IN_USE', label: 'In Use' },
+                { value: 'REPAIR', label: 'Repair' },
+                { value: 'OTHER', label: 'Other' },
+            ],
         },
         {
-            id: 'warehouse',
-            label: 'Warehouse',
-            type: 'text' as const,
-            required: true
-        },
-        {
-            id: 'image',
-            label: 'Image',
-            type: 'text' as const,
-            required: true
+            id: 'staffId',
+            label: 'Employee ID',
+            type: 'select',
+            required: true,
+            options: employees.map((employee: Employee) => ({
+                value: employee.id,
+                label: employee.name,
+            })),
         }
     ];
 
     const columns: ColumnDef<Transportation>[] = [
-        { id: 'id', label: 'ID', align: 'left' },
-        { id: 'name', label: 'Name', align: 'left' },
-        { id: 'category', label: 'Category', align: 'left' },
-        { id: 'quantity', label: 'Quantity', align: 'left' },
-        { id: 'warehouse', label: 'Warehouse', align: 'left' },
-        { id: 'image', label: 'Image', align: 'left' },
+        { id: 'id', label: 'ID', align: 'center' },
+        { id: 'type', label: 'Type', align: 'center' },
+        { id: 'capacity', label: 'Capacity', align: 'center' },
+        { id: 'numberPlate', label: 'Number Plate', align: 'center' },
+        { id: 'status', label: 'Status', align: 'center' },
+        { id: 'driverId', label: 'Driver', align: 'center' },
         { id: 'actions', label: 'Actions', align: 'center' }
     ];
 
@@ -87,30 +131,30 @@ export const TransportationPage: React.FC = () => {
     }
 
     const handleDelete = async (transportationsId: string) => {
-        dispatch(deleteTransportation(transportationsId));
+        await dispatch(deleteTransportation(transportationsId));
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
         if (mode === 'create') {
             const newTransportation: Transportation = {
                 id: `T00${transportations.length + 1}`,
-                name: data.transportationName,
-                category: data.category,
-                quantity: data.quantity,
-                warehouse: data.warehouse,
-                image: data.image
+                type: data.type,
+                capacity: data.capacity,
+                numberPlate: data.numberPlate,
+                status: data.status,
+                driverId: data.staffId
             };
-            dispatch(addTransportation(newTransportation));
-        } else {
+            await dispatch(addTransportation(newTransportation));
+        } else if (selectedTransportation) {
             const updatedTransportation: Transportation = {
-                id: data.transportationId,
-                name: data.transportationName,
-                category: data.category,
-                quantity: data.quantity,
-                warehouse: data.warehouse,
-                image: data.image
+                id: selectedTransportation.id,
+                type: data.type,
+                capacity: data.capacity,
+                numberPlate: data.numberPlate,
+                status: data.status,
+                driverId: data.staffId
             };
-            dispatch(updateTransportation(updatedTransportation));
+            await dispatch(updateTransportation({ id: selectedTransportation.id, transportation: updatedTransportation }));
         }
         handleClose()
     }
@@ -159,11 +203,11 @@ export const TransportationPage: React.FC = () => {
                     onSubmit={handleSubmit}
                     initialData={mode === 'edit' ? {
                         transportationId: selectedTransportation?.id,
-                        transportationName: selectedTransportation?.name,
-                        category: selectedTransportation?.category,
-                        quantity: selectedTransportation?.quantity,
-                        warehouse: selectedTransportation?.warehouse,
-                        image: selectedTransportation?.image
+                        type: selectedTransportation?.type,
+                        capacity: selectedTransportation?.capacity,
+                        numberPlate: selectedTransportation?.numberPlate,
+                        status: selectedTransportation?.status,
+                        staffId: selectedTransportation?.driverId
                     } : undefined}
                     mode={mode}
                     />
