@@ -1,71 +1,139 @@
-import React, {useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {Equipment} from "../components/interfaces/equipment.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {addEquipment, deleteEquipment, updateEquipment} from "../slices/EquipmentSlice.tsx";
+import {addEquipment, deleteEquipment, getEquipment, updateEquipment} from "../slices/EquipmentSlice.tsx";
+import {AppDispatch, RootState} from "../store/store.ts";
+import {getWarehouses} from "../slices/WarehouseSlice.tsx";
+import {Warehouse} from "../components/interfaces/warehouse.ts";
+import {Employee} from "../components/interfaces/employee.ts";
+import {getEmployees} from "../slices/EmployeeSlice.tsx";
 
-interface RootState {
-    equipment: Equipment[];
+interface Field {
+    id: string;
+    label: string;
+    type: "text" | "select";
+    placeholder?: string;
+    required?: boolean;
+    readOnly?: boolean;
+    options?: { value: string; label: string }[];
 }
 
 export const EquipmentPage: React.FC = () => {
     const equipments = useSelector((state: RootState) => state.equipment);
-    const dispatch = useDispatch();
+    const warehouses = useSelector((state: RootState) => state.warehouse);
+    const employees = useSelector((state: RootState) => state.employee);
+    const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
     const [searchQuery, setSearchQuery] = useState<string>('');
 
-    const fields = [
+    useEffect(() => {
+        if (!equipments.length) {
+            dispatch(getEquipment());
+        }
+    }, [dispatch, equipments.length]);
+
+    useEffect(() => {
+        if (!warehouses.length) {
+            dispatch(getWarehouses());
+        }
+    }, [dispatch, warehouses.length]);
+
+    useEffect(() => {
+        if (!employees.length) {
+            dispatch(getEmployees());
+        }
+    }, [dispatch, employees.length]);
+
+    const fields: Field[] = [
         {
             id: 'equipmentId',
             label: 'Equipment ID',
-            type: 'text' as const,
+            type: 'text',
             placeholder: 'Auto-generated',
             readOnly: true,
         },
         {
-            id: 'equipmentName',
-            label: 'Equipment Name',
-            type: 'text' as const,
-            required: true
+            id: 'type',
+            label: 'Equipment Type',
+            type: 'select',
+            required: true,
+            options: [
+                { value: 'FORKLIFT', label: 'Forklift' },
+                { value: 'PALLET_JACK', label: 'Pallet Jack' },
+                { value: 'CONVEYOR', label: 'Conveyor Belt' },
+                { value: 'RACK', label: 'Storage Rack' },
+                { value: 'SCANNER', label: 'Barcode Scanner' },
+                { value: 'PACKAGING_EQUIPMENT', label: 'Packaging Equipment' },
+                { value: 'HAND_TRUCK', label: 'Hand Truck/Dolly' },
+                { value: 'CRANE', label: 'Overhead Crane' },
+                { value: 'SORTING_MACHINE', label: 'Sorting Machine' },
+                { value: 'OTHER', label: 'Other' },
+            ],
         },
         {
             id: 'category',
             label: 'Category',
-            type: 'text' as const,
-            required: true
+            type: 'select',
+            required: true,
+            options: [
+                { value: 'MATERIAL_HANDLING', label: 'Material Handling' },
+                { value: 'STORAGE', label: 'Storage Solutions' },
+                { value: 'PACKAGING', label: 'Packaging & Shipping' },
+                { value: 'AUTOMATION', label: 'Automation & Robotics' },
+                { value: 'SAFETY', label: 'Safety Equipment' },
+                { value: 'INVENTORY_MANAGEMENT', label: 'Inventory Management' },
+                { value: 'MAINTENANCE', label: 'Maintenance Tools' },
+                { value: 'TRANSPORTATION', label: 'Transportation Equipment' },
+                { value: 'OTHER', label: 'Other' },
+            ],
         },
         {
-            id: 'quantity',
-            label: 'Quantity',
-            type: 'text' as const,
-            required: true
+            id: 'status',
+            label: 'Status',
+            type: 'select',
+            required: true,
+            options: [
+                { value: 'AVAILABLE', label: 'Available' },
+                { value: 'IN_USE', label: 'In Use' },
+                { value: 'REPAIR', label: 'Repair' },
+                { value: 'OTHER', label: 'Other' },
+            ],
         },
         {
-            id: 'warehouse',
-            label: 'Warehouse',
-            type: 'text' as const,
-            required: true
+            id: 'warehouseId',
+            label: 'Warehouse Name',
+            type: 'select',
+            required: true,
+            options: warehouses.map((warehouse: Warehouse) => ({
+                value: warehouse.id,
+                label: warehouse.name,
+            })),
         },
         {
-            id: 'image',
-            label: 'Image',
-            type: 'text' as const,
-            required: true
+            id: 'staffId',
+            label: 'Employee ID',
+            type: 'select',
+            required: true,
+            options: employees.map((employee: Employee) => ({
+                value: employee.id,
+                label: employee.name,
+            })),
         }
     ];
 
     const columns: ColumnDef<Equipment>[] = [
-        { id: 'id', label: 'ID', align: 'left' },
-        { id: 'name', label: 'Name', align: 'left' },
-        { id: 'category', label: 'Category', align: 'left' },
-        { id: 'quantity', label: 'Quantity', align: 'left' },
-        { id: 'warehouse', label: 'Warehouse', align: 'left' },
-        { id: 'image', label: 'Image', align: 'left' },
+        { id: 'id', label: 'ID', align: 'center' },
+        { id: 'type', label: 'Type', align: 'center' },
+        { id: 'category', label: 'Category', align: 'center' },
+        { id: 'status', label: 'Status', align: 'center' },
+        { id: 'warehouseId', label: 'Warehouse', align: 'center' },
+        { id: 'staffId', label: 'Employee', align: 'center' },
         { id: 'actions', label: 'Actions', align: 'center' }
     ]
 
@@ -87,30 +155,30 @@ export const EquipmentPage: React.FC = () => {
     }
 
     const handleDelete = async (equipmentId: string) => {
-        dispatch(deleteEquipment(equipmentId));
+        await dispatch(deleteEquipment(equipmentId));
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
         if (mode === 'create') {
             const newEquipment: Equipment = {
                 id: `EQ00${equipments.length + 1}`,
-                name: data.equipmentName,
+                type: data.type,
                 category: data.category,
-                quantity: data.quantity,
-                warehouse: data.warehouse,
-                image: data.image
+                status: data.status,
+                warehouseId: data.warehouseId,
+                staffId: data.staffId
             }
-            dispatch(addEquipment(newEquipment));
-        } else {
+            await dispatch(addEquipment(newEquipment));
+        } else if (selectedEquipment) {
             const updatedEquipment: Equipment = {
-                id: data.equipmentId,
-                name: data.equipmentName,
+                id: selectedEquipment.equipmentId,
+                type: data.type,
                 category: data.category,
-                quantity: data.quantity,
-                warehouse: data.warehouse,
-                image: data.image
+                status: data.status,
+                warehouseId: data.warehouseId,
+                staffId: data.staffId
             }
-            dispatch(updateEquipment(updatedEquipment));
+            await dispatch(updateEquipment({ id: selectedEquipment.id, equipment: updatedEquipment }));
         }
         handleClose();
     }
@@ -159,11 +227,11 @@ export const EquipmentPage: React.FC = () => {
                     onSubmit={handleSubmit}
                     initialData={mode === 'edit' ? {
                         equipmentId: selectedEquipment?.id,
-                        equipmentName: selectedEquipment?.name,
+                        type: selectedEquipment?.type,
                         category: selectedEquipment?.category,
-                        quantity: selectedEquipment?.quantity,
-                        warehouse: selectedEquipment?.warehouse,
-                        image: selectedEquipment?.image
+                        status: selectedEquipment?.status,
+                        warehouseId: selectedEquipment?.warehouseId,
+                        staffId: selectedEquipment?.staffId
                     } : undefined}
                     mode={mode}
                 />

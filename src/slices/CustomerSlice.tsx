@@ -64,7 +64,7 @@ const customerSlice = createSlice({
             .addCase(getCustomers.fulfilled, (state, action) => {
                 action.payload.map((customer:Customer) => {
                     state.push(customer);
-                })
+                });
             })
             .addCase(getCustomers.rejected, () => {
                 console.error("Failed to save customer:");

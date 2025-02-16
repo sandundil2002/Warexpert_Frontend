@@ -3,9 +3,9 @@ import {SearchableItem} from "../common/SearchBarComponent.tsx";
 
 export interface Equipment extends TableItem, SearchableItem {
     id: string;
-    name: string;
+    type: string;
     category: string;
-    quantity: string;
-    warehouse: string;
-    image: string;
+    status: string;
+    staffId: string;
+    warehouseId: string;
 }
