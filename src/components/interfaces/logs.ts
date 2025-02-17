@@ -3,9 +3,9 @@ import {SearchableItem} from "../common/SearchBarComponent.tsx";
 
 export interface Logs extends TableItem, SearchableItem {
     id: string;
-    warehouse: string;
-    inventory: string;
-    action: string;
-    timestamp: string;
-    user: string;
+    type: string;
+    incidents: string;
+    staffId: string;
+    warehouseId: string;
+    inventoryId: string;
 }

@@ -3,6 +3,8 @@ import { Autocomplete, CircularProgress, TextField } from "@mui/material";
 
 export interface SearchableItem {
     id: string;
+    name?: string; // Make `name` optional since it might be null/undefined
+    type?: string; // Add `type` as an optional property
     [key: string]: any;
 }
 
@@ -19,7 +21,8 @@ export const SearchBarComponent = <T extends SearchableItem>({
                                                                  title,
                                                                  data,
                                                                  onSelect,
-                                                                 getOptionLabel = (option: T) => `${option.id} - ${option.name}`,
+                                                                 getOptionLabel = (option: T) =>
+                                                                     option.name != null ? `${option.id} - ${option.name}` : `${option.id} - ${option.type ?? ''}`,
                                                                  filterOptions,
                                                                  className = "w-2/5"
                                                              }: SearchBarComponentProps<T>) => {
@@ -31,7 +34,7 @@ export const SearchBarComponent = <T extends SearchableItem>({
         setOpen(true);
         (async () => {
             setLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 500)); // Simulate async data fetching
             setLoading(false);
             setOptions(data);
         })();

@@ -1,127 +1,168 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Logs} from "../components/interfaces/logs.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {addLog, deleteLog, updateLog} from "../slices/LogSlice.tsx";
+import {AppDispatch, RootState} from "../store/store.ts";
+import {addLog, getLogs} from "../slices/LogSlice.tsx";
+import {getWarehouses} from "../slices/WarehouseSlice.tsx";
+import {getEmployees} from "../slices/EmployeeSlice.tsx";
+import {getInventory} from "../slices/InventorySlice.tsx";
+import {Warehouse} from "../components/interfaces/warehouse.ts";
+import {Employee} from "../components/interfaces/employee.ts";
+import {Inventory} from "../components/interfaces/inventory.ts";
 
-interface RootState {
-    log: Logs[];
+interface Field {
+    id: string;
+    label: string;
+    type: "text" | "select";
+    placeholder?: string;
+    required?: boolean;
+    readOnly?: boolean;
+    options?: { value: string; label: string }[];
 }
 
 export const LogsPage: React.FC = () => {
     const logs = useSelector((state: RootState) => state.log);
-    const dispatch = useDispatch();
+    const staffs = useSelector((state: RootState) => state.employee);
+    const warehouses = useSelector((state: RootState) => state.warehouse);
+    const inventories = useSelector((state: RootState) => state.inventory);
+    const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
-    const [selectedLog, setSelectedLog] = useState<Logs | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
     const [searchQuery, setSearchQuery] = useState<string>('');
 
-    const fields = [
+    useEffect(() => {
+        if (!logs.length) {
+            dispatch(getLogs());
+        }
+    }, [dispatch, logs.length]);
+
+    useEffect(() => {
+        if (!staffs.length) {
+            dispatch(getEmployees());
+        }
+    }, [dispatch, staffs.length]);
+
+    useEffect(() => {
+        if (!warehouses.length) {
+            dispatch(getWarehouses());
+        }
+    }, [dispatch, warehouses.length]);
+
+    useEffect(() => {
+        if (!inventories.length) {
+            dispatch(getInventory());
+        }
+    }, [dispatch, inventories.length]);
+
+    const fields: Field[] = [
         {
             id: 'logId',
             label: 'Log ID',
-            type: 'text' as const,
+            type: 'text',
             placeholder: 'Auto-generated',
             readOnly: true,
         },
         {
-            id: 'warehouse',
-            label: 'Warehouse',
-            type: 'text' as const,
+            id: 'type',
+            label: 'Operation Type',
+            type: 'select',
+            required: true,
+            options: [
+                { value: 'RECEIVE', label: 'Receive Goods' },
+                { value: 'SHIP', label: 'Ship Goods' },
+                { value: 'TRANSFER_IN', label: 'Transfer In (Internal)' },
+                { value: 'TRANSFER_OUT', label: 'Transfer Out (Internal)' },
+                { value: 'RETURN', label: 'Return Goods' },
+                { value: 'ADJUSTMENT_IN', label: 'Inventory Adjustment (In)' },
+                { value: 'ADJUSTMENT_OUT', label: 'Inventory Adjustment (Out)' },
+                { value: 'INSPECTION', label: 'Inspection/Quality Check' },
+                { value: 'REPAIR', label: 'Repair/Maintenance' },
+                { value: 'DISPOSAL', label: 'Dispose Goods' },
+                { value: 'OTHER', label: 'Other' }
+            ]
+        },
+        {
+            id: 'incidents',
+            label: 'Incidents',
+            type: 'text',
             required: true
         },
         {
-            id: 'inventory',
-            label: 'Inventory',
-            type: 'text' as const,
-            required: true
-        },
-        {
-            id: 'timestamp',
-            label: 'Timestamp',
-            type: 'text' as const,
-            required: true
-        },
-        {
-            id: 'action',
-            label: 'Action',
-            type: 'text' as const,
-            required: true
-        },
-        {
-            id: 'user',
+            id: 'staffId',
             label: 'User',
-            type: 'text' as const,
-            required: true
+            type: 'select',
+            required: true,
+            options: staffs.map((staffs: Employee) => ({
+                value: staffs.id,
+                label: staffs.name
+            })),
+        },
+        {
+            id: 'warehouseId',
+            label: 'Warehouse Name',
+            type: 'select',
+            required: true,
+            options: warehouses.map((warehouse: Warehouse) => ({
+                value: warehouse.id,
+                label: warehouse.name,
+            })),
+        },
+        {
+            id: 'inventoryId',
+            label: 'Inventory',
+            type: 'select',
+            required: true,
+            options: inventories.map((inventory: Inventory) => ({
+                value: inventory.id,
+                label: inventory.name,
+            })),
         }
     ];
 
     const columns: ColumnDef<Logs>[] = [
-        {id: 'id', label: 'ID'},
-        {id: 'warehouse', label: 'Warehouse'},
-        {id: 'inventory', label: 'Inventory'},
-        {id: 'timestamp', label: 'Timestamp'},
-        {id: 'action', label: 'Action'},
-        {id: 'user', label: 'User'},
-        { id: 'actions', label: 'Actions', align: 'center' }
+        {id: 'id', label: 'ID', align: 'center' },
+        {id: 'type', label: 'Operation Type', align: 'center' },
+        {id: 'incidents', label: 'Incidents', align: 'center' },
+        {id: 'staffId', label: 'User ID', align: 'center' },
+        {id: 'warehouseId', label: 'Warehouse', align: 'center' },
+        {id: 'inventoryId', label: 'Inventory', align: 'center' },
     ];
 
     const handleOpen = () => {
         setMode('create');
-        setSelectedLog(null);
         setOpen(true);
     }
 
     const handleClose = () => {
         setOpen(false);
-        setSelectedLog(null);
-    }
-
-    const handleEdit = (logs: Logs) => {
-        setMode('edit');
-        setSelectedLog(logs);
-        setOpen(true);
-    }
-
-    const handleDelete = async (logId: string) => {
-        dispatch(deleteLog(logId));
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
         if (mode === 'create') {
             const newLog: Logs = {
                 id: `LOG-${logs.length + 1}`,
-                warehouse: data.warehouse,
-                inventory: data.inventory,
-                timestamp: data.timestamp,
-                action: data.action,
-                user: data.user
+                type: data.tType,
+                incidents: data.incidents,
+                staffId: data.staffId,
+                warehouseId: data.warehouseId,
+                inventoryId: data.inventoryId
             };
-            dispatch(addLog(newLog));
-        } else {
-            const updatedLog: Logs = {
-                id: data.logId,
-                warehouse: data.warehouse,
-                inventory: data.inventory,
-                timestamp: data.timestamp,
-                action: data.action,
-                user: data.user
-            };
-            dispatch(updateLog(updatedLog));
+            await dispatch(addLog(newLog));
         }
         handleClose();
     }
 
     const displayLogs = useMemo(() => {
-        if (!searchQuery) {
-            return logs;
-        }
-        return logs.filter((log) =>
+        if (!searchQuery) return logs;
+
+        return logs.filter(
+            (log) =>
             log.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            log.warehouse.toLowerCase().includes(searchQuery.toLowerCase())
+            log.inventoryId.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [logs, searchQuery]);
 
@@ -145,10 +186,8 @@ export const LogsPage: React.FC = () => {
                 />
 
                 <TableComponent
-                    columns={columns}
                     data={displayLogs}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
+                    columns={columns}
                     enableSelection={true}
                 />
 
@@ -158,14 +197,6 @@ export const LogsPage: React.FC = () => {
                     handleClose={handleClose}
                     fields={fields}
                     onSubmit={handleSubmit}
-                    initialData={mode === 'edit' ? {
-                        logId: selectedLog?.id,
-                        warehouse: selectedLog?.warehouse,
-                        inventory: selectedLog?.inventory,
-                        timestamp: selectedLog?.timestamp,
-                        action: selectedLog?.action,
-                        user: selectedLog?.user
-                    } : undefined}
                     mode={mode}
                 />
             </div>
