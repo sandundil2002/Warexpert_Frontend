@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Employee } from "../components/interfaces/employee.ts";
+import { Employee } from "../model/employee.ts";
 import { ColumnDef, TableComponent } from "../components/common/TableComponent.tsx";
 import { TitleComponent } from "../components/common/TitleComponent.tsx";
 import { SearchBarComponent } from "../components/common/SearchBarComponent.tsx";
 import { PopupModalComponent } from "../components/popup/PopupModalComponent.tsx";
 import { useDispatch, useSelector } from "react-redux";
-import { addEmployee, deleteEmployee, getEmployees, updateEmployee } from "../slices/EmployeeSlice.tsx";
+import { addEmployee, deleteEmployee, getEmployees, updateEmployee } from "../reducers/employee-slice.ts";
 import { AppDispatch, RootState } from "../store/store.ts";
-import { Warehouse } from "../components/interfaces/warehouse.ts";
-import {getWarehouses} from "../slices/WarehouseSlice.tsx";
+import { Warehouse } from "../model/warehouse.ts";
+import {getWarehouses} from "../reducers/warehouse-slice.ts";
 
 interface Field {
     id: string;

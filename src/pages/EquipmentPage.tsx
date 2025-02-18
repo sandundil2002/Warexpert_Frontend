@@ -1,16 +1,16 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {Equipment} from "../components/interfaces/equipment.ts";
+import {Equipment} from "../model/equipment.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {addEquipment, deleteEquipment, getEquipment, updateEquipment} from "../slices/EquipmentSlice.tsx";
+import {addEquipment, deleteEquipment, getEquipment, updateEquipment} from "../reducers/equipment-slice.ts";
 import {AppDispatch, RootState} from "../store/store.ts";
-import {getWarehouses} from "../slices/WarehouseSlice.tsx";
-import {Warehouse} from "../components/interfaces/warehouse.ts";
-import {Employee} from "../components/interfaces/employee.ts";
-import {getEmployees} from "../slices/EmployeeSlice.tsx";
+import {getWarehouses} from "../reducers/warehouse-slice.ts";
+import {Warehouse} from "../model/warehouse.ts";
+import {Employee} from "../model/employee.ts";
+import {getEmployees} from "../reducers/employee-slice.ts";
 
 interface Field {
     id: string;
@@ -189,7 +189,7 @@ export const EquipmentPage: React.FC = () => {
         }
         return equipments.filter((equipment) =>
             equipment.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            equipment.name.toLowerCase().includes(searchQuery.toLowerCase())
+            equipment.type.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [equipments, searchQuery]);
 

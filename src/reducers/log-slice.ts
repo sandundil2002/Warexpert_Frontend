@@ -1,4 +1,4 @@
-import {Logs} from "../components/interfaces/logs.ts";
+import {Logs} from "../model/logs.ts";
 import axios from "axios";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 

@@ -1,4 +1,4 @@
-import {Transportation} from "../components/interfaces/transportation.ts";
+import {Transportation} from "../model/transportation.ts";
 import axios from "axios";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 

@@ -1,16 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Inventory } from "../components/interfaces/inventory.ts";
+import { Inventory } from "../model/inventory.ts";
 import { ColumnDef, TableComponent } from "../components/common/TableComponent.tsx";
 import { TitleComponent } from "../components/common/TitleComponent.tsx";
 import { SearchBarComponent } from "../components/common/SearchBarComponent.tsx";
 import { PopupModalComponent } from "../components/popup/PopupModalComponent.tsx";
 import { useDispatch, useSelector } from "react-redux";
-import { addInventory, deleteInventory, getInventory, updateInventory } from "../slices/InventorySlice.tsx";
+import { addInventory, deleteInventory, getInventory, updateInventory } from "../reducers/inventory-slice.ts";
 import { AppDispatch, RootState } from "../store/store.ts";
-import { Warehouse } from "../components/interfaces/warehouse.ts";
-import { Customer } from "../components/interfaces/customer.ts";
-import { getWarehouses } from "../slices/WarehouseSlice.tsx";
-import { getCustomers } from "../slices/CustomerSlice.tsx";
+import { Warehouse } from "../model/warehouse.ts";
+import { Customer } from "../model/customer.ts";
+import { getWarehouses } from "../reducers/warehouse-slice.ts";
+import { getCustomers } from "../reducers/customer-slice.ts";
 
 interface Field {
     id: string;

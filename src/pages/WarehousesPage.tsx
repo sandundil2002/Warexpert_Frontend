@@ -3,9 +3,9 @@ import { PopupModalComponent } from "../components/popup/PopupModalComponent.tsx
 import { TitleComponent } from "../components/common/TitleComponent";
 import { SearchBarComponent } from "../components/common/SearchBarComponent";
 import { ColumnDef, TableComponent } from "../components/common/TableComponent";
-import { Warehouse } from "../components/interfaces/warehouse";
+import { Warehouse } from "../model/warehouse";
 import {useDispatch, useSelector} from "react-redux";
-import {addWarehouse, deleteWarehouse, getWarehouses, updateWarehouse} from "../slices/WarehouseSlice.tsx";
+import {addWarehouse, deleteWarehouse, getWarehouses, updateWarehouse} from "../reducers/warehouse-slice.ts";
 import {AppDispatch, RootState} from "../store/store.ts";
 
 interface Field {

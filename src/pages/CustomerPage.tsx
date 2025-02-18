@@ -1,11 +1,11 @@
 import React, {useEffect, useMemo, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Customer } from "../components/interfaces/customer";
+import { Customer } from "../model/customer";
 import { TitleComponent } from "../components/common/TitleComponent";
 import { SearchBarComponent } from "../components/common/SearchBarComponent";
 import { ColumnDef, TableComponent } from "../components/common/TableComponent";
 import { PopupModalComponent } from "../components/popup/PopupModalComponent";
-import {addCustomer, deleteCustomer, getCustomers, updateCustomer} from "../slices/CustomerSlice";
+import {addCustomer, deleteCustomer, getCustomers, updateCustomer} from "../reducers/customer-slice.ts";
 import {AppDispatch, RootState} from "../store/store.ts";
 
 interface Field {

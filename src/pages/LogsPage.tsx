@@ -1,18 +1,18 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Logs} from "../components/interfaces/logs.ts";
+import {Logs} from "../model/logs.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../store/store.ts";
-import {addLog, getLogs} from "../slices/LogSlice.tsx";
-import {getWarehouses} from "../slices/WarehouseSlice.tsx";
-import {getEmployees} from "../slices/EmployeeSlice.tsx";
-import {getInventory} from "../slices/InventorySlice.tsx";
-import {Warehouse} from "../components/interfaces/warehouse.ts";
-import {Employee} from "../components/interfaces/employee.ts";
-import {Inventory} from "../components/interfaces/inventory.ts";
+import {addLog, getLogs} from "../reducers/log-slice.ts";
+import {getWarehouses} from "../reducers/warehouse-slice.ts";
+import {getEmployees} from "../reducers/employee-slice.ts";
+import {getInventory} from "../reducers/inventory-slice.ts";
+import {Warehouse} from "../model/warehouse.ts";
+import {Employee} from "../model/employee.ts";
+import {Inventory} from "../model/inventory.ts";
 
 interface Field {
     id: string;

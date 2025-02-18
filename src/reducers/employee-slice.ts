@@ -1,4 +1,4 @@
-import {Employee} from "../components/interfaces/employee.ts";
+import {Employee} from "../model/employee.ts";
 import axios from "axios";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 

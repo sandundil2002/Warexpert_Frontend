@@ -1,5 +1,5 @@
-import {TableItem} from "../common/TableComponent.tsx";
-import {SearchableItem} from "../common/SearchBarComponent.tsx";
+import {TableItem} from "../components/common/TableComponent.tsx";
+import {SearchableItem} from "../components/common/SearchBarComponent.tsx";
 
 export interface Warehouse extends TableItem, SearchableItem {
     id: string;

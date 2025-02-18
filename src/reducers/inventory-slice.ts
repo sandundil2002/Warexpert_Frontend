@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {Inventory} from "../components/interfaces/inventory.ts";
+import {Inventory} from "../model/inventory.ts";
 import axios from "axios";
 
 const initialState: Inventory[] = [];

@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {Transportation} from "../components/interfaces/transportation.ts";
+import {Transportation} from "../model/transportation.ts";
 import {ColumnDef, TableComponent} from "../components/common/TableComponent.tsx";
 import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
@@ -10,10 +10,10 @@ import {
     deleteTransportation,
     getTransportations,
     updateTransportation
-} from "../slices/TransportationSlice.tsx";
+} from "../reducers/transportation-slice.ts";
 import {AppDispatch, RootState} from "../store/store.ts";
-import {getEmployees} from "../slices/EmployeeSlice.tsx";
-import {Employee} from "../components/interfaces/employee.ts";
+import {getEmployees} from "../reducers/employee-slice.ts";
+import {Employee} from "../model/employee.ts";
 
 interface Field {
     id: string;
