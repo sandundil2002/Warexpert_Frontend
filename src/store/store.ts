@@ -6,9 +6,11 @@ import employeeSlice from "../reducers/employee-slice.ts";
 import logSlice from "../reducers/log-slice.ts";
 import transportationSlice from "../reducers/transportation-slice.ts";
 import equipmentSlice from "../reducers/equipment-slice.ts";
+import userSlice from "../reducers/user-slice.ts";
 
 export const store = configureStore({
     reducer: {
+        user: userSlice,
         warehouse: warehouseSlice,
         customer: customerSlice,
         inventory: inventorySlice,
