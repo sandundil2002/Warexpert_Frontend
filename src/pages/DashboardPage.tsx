@@ -8,36 +8,36 @@ export const DashboardPage: React.FC = () => {
     return (
         <DashboardPageLayout>
             <Grid container spacing={1}>
-                <Grid size={5} />
+                <Grid size={5}/>
                 <Grid size={12}>
-                    <DashboardSkeletonComponent height={14} />
+                    <DashboardSkeletonComponent height={14}/>
                 </Grid>
                 <Grid size={12}>
-                    <DashboardSkeletonComponent height={14} />
+                    <DashboardSkeletonComponent height={14}/>
                 </Grid>
                 <Grid size={4}>
-                    <DashboardSkeletonComponent height={100} />
+                    <DashboardSkeletonComponent height={100}/>
                 </Grid>
                 <Grid size={8}>
-                    <DashboardSkeletonComponent height={100} />
+                    <DashboardSkeletonComponent height={100}/>
                 </Grid>
                 <Grid size={12}>
-                    <DashboardSkeletonComponent height={150} />
+                    <DashboardSkeletonComponent height={150}/>
                 </Grid>
                 <Grid size={12}>
-                    <DashboardSkeletonComponent height={14} />
+                    <DashboardSkeletonComponent height={14}/>
                 </Grid>
                 <Grid size={3}>
-                    <DashboardSkeletonComponent height={100} />
+                    <DashboardSkeletonComponent height={100}/>
                 </Grid>
                 <Grid size={3}>
-                    <DashboardSkeletonComponent height={100} />
+                    <DashboardSkeletonComponent height={100}/>
                 </Grid>
                 <Grid size={3}>
-                    <DashboardSkeletonComponent height={100} />
+                    <DashboardSkeletonComponent height={100}/>
                 </Grid>
                 <Grid size={3}>
-                    <DashboardSkeletonComponent height={100} />
+                    <DashboardSkeletonComponent height={100}/>
                 </Grid>
             </Grid>
         </DashboardPageLayout>

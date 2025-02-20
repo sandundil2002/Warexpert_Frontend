@@ -14,6 +14,7 @@ import {
 import {AppDispatch, RootState} from "../store/store.ts";
 import {getEmployees} from "../reducers/employee-slice.ts";
 import {Employee} from "../model/employee.ts";
+import {Navigate} from "react-router-dom";
 
 interface Field {
     id: string;
@@ -28,6 +29,7 @@ interface Field {
 export const TransportationPage: React.FC = () => {
     const transportations = useSelector((state: RootState) => state.transportation);
     const employees = useSelector((state: RootState) => state.employee);
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [selectedTransportation, setSelectedTransportation] = useState<Transportation | null>(null);
@@ -45,6 +47,10 @@ export const TransportationPage: React.FC = () => {
             dispatch(getEmployees());
         }
     }, [dispatch, employees.length]);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/signin" />;
+    }
 
     const fields: Field[] = [
         {
@@ -159,13 +165,14 @@ export const TransportationPage: React.FC = () => {
         handleClose()
     }
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const displayTransportations = useMemo(() => {
         if (!searchQuery) {
             return transportations;
         }
         return transportations.filter((transportation) =>
             transportation.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            transportation.name.toLowerCase().includes(searchQuery.toLowerCase())
+            transportation.type.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [transportations, searchQuery]);
 

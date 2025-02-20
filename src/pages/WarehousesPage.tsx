@@ -7,6 +7,7 @@ import { Warehouse } from "../model/warehouse";
 import {useDispatch, useSelector} from "react-redux";
 import {addWarehouse, deleteWarehouse, getWarehouses, updateWarehouse} from "../reducers/warehouse-slice.ts";
 import {AppDispatch, RootState} from "../store/store.ts";
+import {Navigate} from "react-router-dom";
 
 interface Field {
     id: string;
@@ -20,6 +21,7 @@ interface Field {
 export const WarehousesPage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const warehouses = useSelector((state: RootState) => state.warehouse);
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
     const [open, setOpen] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<Warehouse | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -29,7 +31,11 @@ export const WarehousesPage: React.FC = () => {
         if (!warehouses.length) {
             dispatch(getWarehouses());
         }
-    }, [dispatch, warehouses.length])
+    }, [dispatch, warehouses.length]);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/signin" />;
+    }
 
     const fields: Field[] = [
         {

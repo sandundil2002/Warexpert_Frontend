@@ -1,18 +1,14 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Inventory} from "../model/inventory.ts";
-import axios from "axios";
+import {apiInstance} from "../api/api-instance.ts";
 
 const initialState: Inventory[] = [];
-
-const api = axios.create({
-    baseURL: "http://localhost:3000/inventory",
-});
 
 export const getInventory = createAsyncThunk<Inventory[]>(
     "inventory/getInventory",
     async () => {
         try {
-            const response = await api.get("/get");
+            const response = await apiInstance.get("/inventory/get");
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -24,7 +20,7 @@ export const addInventory = createAsyncThunk<Inventory, Inventory>(
     "inventory/addInventory",
     async (inventory) => {
         try {
-            const response = await api.post("/post", inventory);
+            const response = await apiInstance.post("/inventory/post", inventory);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -36,7 +32,7 @@ export const updateInventory = createAsyncThunk<Inventory, {id: string; inventor
     "inventory/updateInventory",
     async ({ id, inventory}) => {
         try {
-            const response = await api.patch(`/patch/${id}`, inventory);
+            const response = await apiInstance.patch(`/inventory/patch/${id}`, inventory);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -47,7 +43,7 @@ export const updateInventory = createAsyncThunk<Inventory, {id: string; inventor
 export const deleteInventory = createAsyncThunk<string, string>(
     "inventory/deleteInventory",
     async (id) => {
-        await api.delete(`/delete/${id}`);
+        await apiInstance.delete(`/inventory/delete/${id}`);
         return id;
     }
 );

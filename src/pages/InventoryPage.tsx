@@ -11,6 +11,7 @@ import { Warehouse } from "../model/warehouse.ts";
 import { Customer } from "../model/customer.ts";
 import { getWarehouses } from "../reducers/warehouse-slice.ts";
 import { getCustomers } from "../reducers/customer-slice.ts";
+import {Navigate} from "react-router-dom";
 
 interface Field {
     id: string;
@@ -26,6 +27,7 @@ export const InventoryPage: React.FC = () => {
     const inventory = useSelector((state: RootState) => state.inventory);
     const warehouses = useSelector((state: RootState) => state.warehouse);
     const customers = useSelector((state: RootState) => state.customer);
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [selectedInventory, setSelectedInventory] = useState<Inventory | null>(null);
@@ -49,6 +51,10 @@ export const InventoryPage: React.FC = () => {
             dispatch(getCustomers());
         }
     }, [dispatch, customers.length]);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/signin" />;
+    }
 
     const fields: Field[] = [
         {

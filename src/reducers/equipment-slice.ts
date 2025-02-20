@@ -1,18 +1,14 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Equipment} from "../model/equipment.ts";
-import axios from "axios";
+import {apiInstance} from "../api/api-instance.ts";
 
 const initialState: Equipment[] = [];
-
-const api = axios.create({
-    baseURL: "http://localhost:3000/equipment"
-});
 
 export const getEquipment = createAsyncThunk<Equipment[]>(
     "equipment/getEquipment",
     async () => {
         try {
-            const response = await api.get("/get");
+            const response = await apiInstance.get("/equipment/get");
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -24,7 +20,7 @@ export const addEquipment = createAsyncThunk<Equipment, Equipment>(
     "equipment/addEquipment",
     async (equipment) => {
         try {
-            const response = await api.post("/post", equipment);
+            const response = await apiInstance.post("/equipment/post", equipment);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -36,7 +32,7 @@ export const updateEquipment = createAsyncThunk<Equipment, { id: string; equipme
     "equipment/updateEquipment",
     async ({ id, equipment }) => {
         try {
-            const response = await api.patch(`/patch/${id}`, equipment);
+            const response = await apiInstance.patch(`/equipment/patch/${id}`, equipment);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -47,7 +43,7 @@ export const updateEquipment = createAsyncThunk<Equipment, { id: string; equipme
 export const deleteEquipment = createAsyncThunk<string, string>(
     "equipment/deleteEquipment",
     async (id) => {
-        await api.delete(`/delete/${id}`);
+        await apiInstance.delete(`/equipment/delete/${id}`);
         return id;
     }
 );

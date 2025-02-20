@@ -7,6 +7,7 @@ import { ColumnDef, TableComponent } from "../components/common/TableComponent";
 import { PopupModalComponent } from "../components/popup/PopupModalComponent";
 import {addCustomer, deleteCustomer, getCustomers, updateCustomer} from "../reducers/customer-slice.ts";
 import {AppDispatch, RootState} from "../store/store.ts";
+import {Navigate} from "react-router-dom";
 
 interface Field {
     id: string;
@@ -19,6 +20,7 @@ interface Field {
 
 export const CustomerPage: React.FC = () => {
     const customers = useSelector((state: RootState) => state.customer);
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -30,6 +32,10 @@ export const CustomerPage: React.FC = () => {
             dispatch(getCustomers());
         }
     }, [dispatch, customers.length]);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/signin" />;
+    }
 
     const fields: Field[] = [
         {

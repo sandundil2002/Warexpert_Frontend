@@ -13,6 +13,7 @@ import {getInventory} from "../reducers/inventory-slice.ts";
 import {Warehouse} from "../model/warehouse.ts";
 import {Employee} from "../model/employee.ts";
 import {Inventory} from "../model/inventory.ts";
+import {Navigate} from "react-router-dom";
 
 interface Field {
     id: string;
@@ -29,6 +30,7 @@ export const LogsPage: React.FC = () => {
     const staffs = useSelector((state: RootState) => state.employee);
     const warehouses = useSelector((state: RootState) => state.warehouse);
     const inventories = useSelector((state: RootState) => state.inventory);
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -57,6 +59,10 @@ export const LogsPage: React.FC = () => {
             dispatch(getInventory());
         }
     }, [dispatch, inventories.length]);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/signin" />;
+    }
 
     const fields: Field[] = [
         {

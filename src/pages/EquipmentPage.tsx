@@ -11,6 +11,7 @@ import {getWarehouses} from "../reducers/warehouse-slice.ts";
 import {Warehouse} from "../model/warehouse.ts";
 import {Employee} from "../model/employee.ts";
 import {getEmployees} from "../reducers/employee-slice.ts";
+import {Navigate} from "react-router-dom";
 
 interface Field {
     id: string;
@@ -26,6 +27,7 @@ export const EquipmentPage: React.FC = () => {
     const equipments = useSelector((state: RootState) => state.equipment);
     const warehouses = useSelector((state: RootState) => state.warehouse);
     const employees = useSelector((state: RootState) => state.employee);
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
@@ -49,6 +51,10 @@ export const EquipmentPage: React.FC = () => {
             dispatch(getEmployees());
         }
     }, [dispatch, employees.length]);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/signin" />;
+    }
 
     const fields: Field[] = [
         {

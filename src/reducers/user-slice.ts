@@ -49,9 +49,10 @@ export const otpVerification = createAsyncThunk(
         try {
             const response = await api.post('/verify-otp', { user, otp }, { withCredentials: true });
 
-            const { accessToken, refreshToken } = response.data;
-
-            return { jwt_token: accessToken, refresh_token: refreshToken };
+            if (response.data || response.data.success) {
+                const {accessToken, refreshToken} = response.data;
+                return {jwt_token: accessToken, refresh_token: refreshToken};
+            }
         } catch (err) {
             console.error("OTP Verification Error:", err);
         }
@@ -109,9 +110,10 @@ const userSlice = createSlice({
             .addCase(otpVerification.fulfilled, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = true;
+                // @ts-ignore
                 state.jwt_token = action.payload.jwt_token;
+                // @ts-ignore
                 state.refresh_token = action.payload.refresh_token;
-                // state.username = action.payload.username;
                 state.error = '';
             })
             .addCase(otpVerification.rejected, (state, action) => {

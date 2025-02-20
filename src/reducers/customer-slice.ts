@@ -1,18 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import {Customer} from "../model/customer.ts";
+import {apiInstance} from "../api/api-instance.ts";
 
 export const initialState : Customer[] = [];
-
-const api = axios.create({
-    baseURL : "http://localhost:3000/customer"
-});
 
 export const getCustomers = createAsyncThunk<Customer[]>(
     "customer/getCustomers",
     async () => {
         try {
-            const response = await api.get("/get");
+            const response = await apiInstance.get("/customer/get");
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -24,7 +20,7 @@ export const addCustomer = createAsyncThunk<Customer, Customer>(
     "customer/addCustomer",
     async (customer) => {
         try {
-            const response = await api.post("/post", customer);
+            const response = await apiInstance.post("/customer/post", customer);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -36,7 +32,7 @@ export const updateCustomer = createAsyncThunk<Customer, { id: string; customer:
     "customer/updateCustomer",
     async ({ id, customer }) => {
         try {
-            const response = await api.patch(`/patch/${id}`, customer);
+            const response = await apiInstance.patch(`/customer/patch/${id}`, customer);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -47,7 +43,7 @@ export const updateCustomer = createAsyncThunk<Customer, { id: string; customer:
 export const deleteCustomer = createAsyncThunk<string, string>(
     "customer/deleteCustomer",
     async (id) => {
-        await api.delete(`/delete/${id}`);
+        await apiInstance.delete(`/customer/delete/${id}`);
         return id;
     }
 );

@@ -1,18 +1,14 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Warehouse} from "../model/warehouse.ts";
-import axios from "axios";
+import {apiInstance} from "../api/api-instance.ts";
 
 const initialState: Warehouse[] = [];
-
-const api = axios.create({
-    baseURL: "http://localhost:3000/warehouse",
-});
 
 export const getWarehouses = createAsyncThunk<Warehouse[]>(
     "warehouse/getWarehouses",
     async () => {
         try {
-            const response = await api.get("/get");
+            const response = await apiInstance.get("/warehouse/get");
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -24,7 +20,7 @@ export const addWarehouse = createAsyncThunk<Warehouse, Warehouse>(
     "warehouse/addWarehouse",
     async (warehouse) => {
         try {
-            const response = await api.post(`/post`, warehouse);
+            const response = await apiInstance.post(`/warehouse/post`, warehouse);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -36,7 +32,7 @@ export const updateWarehouse = createAsyncThunk<Warehouse, {id: string; warehous
     "warehouse/updateWarehouse",
     async ({id, warehouse}) => {
         try {
-            const response = await api.patch(`/patch/${id}`, warehouse);
+            const response = await apiInstance.patch(`/warehouse/patch/${id}`, warehouse);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -47,7 +43,7 @@ export const updateWarehouse = createAsyncThunk<Warehouse, {id: string; warehous
 export const deleteWarehouse = createAsyncThunk<string, string>(
     "warehouse/deleteWarehouse",
     async (id) =>{
-        await api.delete(`/delete/${id}`);
+        await apiInstance.delete(`/warehouse/delete/${id}`);
         return id;
     }
 );

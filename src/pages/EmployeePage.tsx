@@ -9,6 +9,7 @@ import { addEmployee, deleteEmployee, getEmployees, updateEmployee } from "../re
 import { AppDispatch, RootState } from "../store/store.ts";
 import { Warehouse } from "../model/warehouse.ts";
 import {getWarehouses} from "../reducers/warehouse-slice.ts";
+import {Navigate} from "react-router-dom";
 
 interface Field {
     id: string;
@@ -23,6 +24,7 @@ interface Field {
 export const EmployeePage: React.FC = () => {
     const employees = useSelector((state: RootState) => state.employee);
     const warehouses = useSelector((state: RootState) => state.warehouse);
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
     const [open, setOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -40,6 +42,10 @@ export const EmployeePage: React.FC = () => {
             dispatch(getWarehouses());
         }
     }, [dispatch, warehouses.length]);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/signin" />;
+    }
 
     const fields: Field[] = [
         {

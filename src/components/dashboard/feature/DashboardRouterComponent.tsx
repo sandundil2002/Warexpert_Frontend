@@ -8,6 +8,7 @@ import {EmployeePage} from "../../../pages/EmployeePage.tsx";
 import {LogsPage} from "../../../pages/LogsPage.tsx";
 import {TransportationPage} from "../../../pages/TransportationPage.tsx";
 import {EquipmentPage} from "../../../pages/EquipmentPage.tsx";
+import {MainPage} from "../../../pages/MainPage.tsx";
 
 type RouteConfig = {
     [path: string]: ReactElement;
@@ -17,7 +18,7 @@ export function DashboardRouterComponent(initialPath: string): Router  & { Compo
     const [pathname, setPathname] = useState(initialPath);
 
     const routes: RouteConfig = {
-        '/dashboard': <div>Dashboard</div>,
+        '/dashboard': <MainPage />,
         '/warehouses': <WarehousesPage />,
         '/customers': <CustomerPage />,
         '/inventory': <InventoryPage />,

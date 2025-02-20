@@ -1,18 +1,14 @@
 import {Transportation} from "../model/transportation.ts";
-import axios from "axios";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {apiInstance} from "../api/api-instance.ts";
 
 const initialState: Transportation[] = [];
-
-const api = axios.create({
-    baseURL: "http://localhost:3000/transportation"
-});
 
 export const getTransportations = createAsyncThunk<Transportation[]>(
     "transportation/getTransportations",
     async () => {
         try {
-            const response = await api.get("/get");
+            const response = await apiInstance.get("/transportation/get");
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -24,7 +20,7 @@ export const addTransportation = createAsyncThunk<Transportation, Transportation
     "transportation/addTransportation",
     async (transportation) => {
         try {
-            const response = await api.post("/post", transportation);
+            const response = await apiInstance.post("/transportation/post", transportation);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -36,7 +32,7 @@ export const updateTransportation = createAsyncThunk<Transportation, { id: strin
     "transportation/updateTransportation",
     async ({ id, transportation }) => {
         try {
-            const response = await api.patch(`/patch/${id}`, transportation);
+            const response = await apiInstance.patch(`/transportation/patch/${id}`, transportation);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -47,7 +43,7 @@ export const updateTransportation = createAsyncThunk<Transportation, { id: strin
 export const deleteTransportation = createAsyncThunk<string, string>(
     "transportation/deleteTransportation",
     async (id) => {
-        await api.delete(`/delete/${id}`);
+        await apiInstance.delete(`/transportation/delete/${id}`);
         return id;
     }
 );

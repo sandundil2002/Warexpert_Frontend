@@ -1,18 +1,14 @@
 import {Employee} from "../model/employee.ts";
-import axios from "axios";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {apiInstance} from "../api/api-instance.ts";
 
 const initialState: Employee[] = [];
-
-const api = axios.create({
-    baseURL: "http://localhost:3000/staff",
-});
 
 export const getEmployees = createAsyncThunk<Employee[]>(
     "employee/getEmployees",
     async () => {
         try {
-            const response = await api.get("/get");
+            const response = await apiInstance.get("/staff/get");
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -24,7 +20,7 @@ export const addEmployee = createAsyncThunk<Employee, Employee>(
     "employee/addEmployee",
     async (employee) => {
         try {
-            const response = await api.post("/post", employee);
+            const response = await apiInstance.post("/staff/post", employee);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -36,7 +32,7 @@ export const updateEmployee = createAsyncThunk<Employee, {id: string; employee:E
     "employee/updateEmployee",
     async ({ id, employee}) => {
         try {
-            const response = await api.patch(`/patch/${id}`, employee);
+            const response = await apiInstance.patch(`/staff/patch/${id}`, employee);
             return response.data;
         } catch (error) {
             console.log("error", error);
@@ -47,7 +43,7 @@ export const updateEmployee = createAsyncThunk<Employee, {id: string; employee:E
 export const deleteEmployee = createAsyncThunk<string, string>(
     "employee/deleteEmployee",
     async (id) => {
-        await api.delete(`/delete/${id}`);
+        await apiInstance.delete(`/staff/delete/${id}`);
         return id;
     }
 );
