@@ -8,6 +8,7 @@ import transportationReducer from "../reducers/transportation-slice.ts";
 import equipmentReducer from "../reducers/equipment-slice.ts";
 import userReducer from "../reducers/user-slice.ts";
 import {injectStore} from "../api/api-instance.ts";
+import reportReducer from "../reducers/report-slice.ts";
 
 export const store = configureStore({
     reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
         log: logReducer,
         transportation: transportationReducer,
         equipment: equipmentReducer,
+        report: reportReducer,
         user: userReducer,
     },
 });

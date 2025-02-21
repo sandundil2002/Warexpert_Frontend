@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 interface ModalField {
     id: string;
     label: string;
-    type: 'text' | 'email' | 'gps' | 'number' | 'file' | 'select' | 'time';
+    type: 'text' | 'email' | 'gps' | 'number' | 'file' | 'select' | 'time' | 'date';
     placeholder?: string;
     required?: boolean;
     readOnly?: boolean;

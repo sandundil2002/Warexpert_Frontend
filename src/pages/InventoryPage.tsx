@@ -16,7 +16,7 @@ import {Navigate} from "react-router-dom";
 interface Field {
     id: string;
     label: string;
-    type: "text" | "email" | "select" | "number" | "file";
+    type: "text" | "email" | "select" | "number" | "file" | "date";
     placeholder?: string;
     required?: boolean;
     readOnly?: boolean;
@@ -90,14 +90,10 @@ export const InventoryPage: React.FC = () => {
             required: true,
         },
         {
-            id: 'status',
-            label: 'Status',
-            type: 'select',
+            id: 'expiry',
+            label: 'Expire Date',
+            type: 'date',
             required: true,
-            options: [
-                { value: 'Available', label: 'Available' },
-                { value: 'Not Available', label: 'Not Available' },
-            ],
         },
         {
             id: 'image',
@@ -133,6 +129,7 @@ export const InventoryPage: React.FC = () => {
         { id: 'category', label: 'Category', align: "center" },
         { id: 'quantity', label: 'Quantity', align: "center" },
         { id: 'status', label: 'Status', align: "center" },
+        { id: 'expiry', label: 'Expiry', align: "center" },
         {
             id: 'image',
             label: 'Image',
@@ -189,7 +186,6 @@ export const InventoryPage: React.FC = () => {
                 return;
             }
         } else {
-            // If no new image is uploaded during edit, retain the existing image
             imageBase64 = selectedInventory?.image || '';
         }
 
@@ -200,7 +196,8 @@ export const InventoryPage: React.FC = () => {
                 category: data.category,
                 quantity: data.quantity,
                 status: data.status,
-                image: imageBase64, // Use the Base64 string here
+                image: imageBase64,
+                expiry: data.expiry,
                 warehouseId: data.warehouseId,
                 customerId: data.customerId,
             };
@@ -212,7 +209,8 @@ export const InventoryPage: React.FC = () => {
                 category: data.category,
                 quantity: data.quantity,
                 status: data.status,
-                image: imageBase64, // Use the Base64 string here
+                image: imageBase64,
+                expiry: data.expiry,
                 warehouseId: data.warehouseId,
                 customerId: data.customerId,
             };
@@ -220,6 +218,7 @@ export const InventoryPage: React.FC = () => {
         }
         handleClose();
     };
+
 
     const displayedInventory = useMemo(() => {
         if (!searchQuery) {

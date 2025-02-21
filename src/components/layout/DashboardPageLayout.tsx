@@ -14,7 +14,7 @@ export const DashboardPageLayout: React.FC<DashboardPageLayoutProps> = () => {
     const router = DashboardRouterComponent('/dashboard');
 
     return (
-        <AppProvider navigation={DashboardNavComponent} router={router} theme={DashboardThemeComponent} branding={{title: "WareXpert WarehouseModel", homeUrl:"/dashboard"}}>
+        <AppProvider navigation={DashboardNavComponent} router={router} theme={DashboardThemeComponent} branding={{title: "WareXpert Warehouse", homeUrl:"/dashboard"}}>
             <DashboardLayout>
                 <PageContainer title="" sx={{'.MuiTypography-root': { display: 'none' },}}>
                     {router.Component}

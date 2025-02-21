@@ -10,4 +10,5 @@ export interface Inventory extends TableItem, SearchableItem {
     image: string;
     warehouseId: string;
     customerId: string;
+    expiry: string;
 }
