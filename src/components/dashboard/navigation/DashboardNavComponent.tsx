@@ -42,11 +42,6 @@ export const DashboardNavComponent: Navigation = [
         title: 'Item Inventory',
         icon: <Inventory />,
     },
-    // {
-    //     segment: 'logs',
-    //     title: 'Monitoring Logs',
-    //     icon: <Monitor />,
-    // },
     {
         segment: 'transportation ',
         title: 'Transportation ',
@@ -59,7 +54,7 @@ export const DashboardNavComponent: Navigation = [
     },
     {
         segment: 'reports',
-        title: 'Reports',
+        title: 'Analyzes',
         icon: <BarChartIcon />,
     },
     {
