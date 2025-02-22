@@ -7,6 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../store/store.ts";
 import {loginUser} from "../reducers/user-slice.ts";
 import {unwrapResult} from "@reduxjs/toolkit";
+import {toast} from "sonner";
 
 export const UserSignInPage = () => {
     const isLoading = useSelector((state: RootState) => state.user.loading);
@@ -32,7 +33,7 @@ export const UserSignInPage = () => {
             const response = unwrapResult(resultAction);
 
             if (response && response.accessToken) {
-                console.log("Login successful. Navigating to dashboard...");
+                toast.info("Login successful");
                 navigate('/dashboard');
             } else {
                 console.error("Login failed. No token received.");

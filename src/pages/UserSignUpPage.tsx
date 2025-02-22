@@ -8,6 +8,7 @@ import {AppDispatch} from "../store/store.ts";
 import {registerUser} from "../reducers/user-slice.ts";
 import {User} from "../model/user.ts";
 import {unwrapResult} from "@reduxjs/toolkit";
+import {toast} from "sonner";
 
 export const UserSignUpPage = () => {
     const [email, setEmail] = useState('');
@@ -32,7 +33,7 @@ export const UserSignUpPage = () => {
             const response = unwrapResult(resultAction);
 
             if (response && response.success) {
-                console.log("Registration successful. Navigating to OTP verification...");
+                toast.info("OTP send successfully! please verify your email");
                 navigate('/verify-otp', { state: { username: email, password } });
             } else {
                 console.error("Registration failed:", response.message);

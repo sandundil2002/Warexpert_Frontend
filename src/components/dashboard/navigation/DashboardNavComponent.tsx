@@ -61,18 +61,6 @@ export const DashboardNavComponent: Navigation = [
         segment: 'reports',
         title: 'Reports',
         icon: <BarChartIcon />,
-        // children: [
-        //     {
-        //         segment: 'sales',
-        //         title: 'Sales',
-        //         icon: <DescriptionIcon />,
-        //     },
-        //     {
-        //         segment: 'traffic',
-        //         title: 'Traffic',
-        //         icon: <DescriptionIcon />,
-        //     },
-        // ],
     },
     {
         segment: 'settings',

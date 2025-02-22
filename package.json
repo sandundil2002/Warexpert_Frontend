@@ -26,6 +26,7 @@
     "react-router-dom": "^7.1.1",
     "recharts": "^2.15.1",
     "redux": "^5.0.1",
+    "sonner": "^2.0.1",
     "styled-components": "^6.1.14"
   },
   "devDependencies": {

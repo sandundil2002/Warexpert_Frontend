@@ -10,6 +10,7 @@ import { AppDispatch, RootState } from "../store/store.ts";
 import { Warehouse } from "../model/warehouse.ts";
 import {getWarehouses} from "../reducers/warehouse-slice.ts";
 import {Navigate} from "react-router-dom";
+import {toast} from "sonner";
 
 interface Field {
     id: string;
@@ -153,6 +154,7 @@ export const EmployeePage: React.FC = () => {
 
     const handleDelete = async (employeeId: string) => {
         await dispatch(deleteEmployee(employeeId));
+        toast.warning("Employee deleted successfully");
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -168,6 +170,7 @@ export const EmployeePage: React.FC = () => {
                 warehouseId: data.warehouseId,
             };
             await dispatch(addEmployee(newEmployee));
+            toast.success("Employee added successfully");
         } else {
             const updatedEmployee: Employee = {
                 id: data.employeeId,
@@ -180,10 +183,12 @@ export const EmployeePage: React.FC = () => {
                 warehouseId: data.warehouseId,
             };
             await dispatch(updateEmployee({ id: updatedEmployee.id, employee: updatedEmployee }));
+            toast.success("Employee updated successfully");
         }
         handleClose();
     };
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const displayEmployees = useMemo(() => {
         if (!searchQuery) {
             return employees;

@@ -15,6 +15,7 @@ import {AppDispatch, RootState} from "../store/store.ts";
 import {getEmployees} from "../reducers/employee-slice.ts";
 import {Employee} from "../model/employee.ts";
 import {Navigate} from "react-router-dom";
+import {toast} from "sonner";
 
 interface Field {
     id: string;
@@ -138,6 +139,7 @@ export const TransportationPage: React.FC = () => {
 
     const handleDelete = async (transportationsId: string) => {
         await dispatch(deleteTransportation(transportationsId));
+        toast.warning("Transportation deleted successfully");
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -151,6 +153,7 @@ export const TransportationPage: React.FC = () => {
                 driverId: data.staffId
             };
             await dispatch(addTransportation(newTransportation));
+            toast.success("Transportation added successfully");
         } else if (selectedTransportation) {
             const updatedTransportation: Transportation = {
                 id: selectedTransportation.id,
@@ -161,6 +164,7 @@ export const TransportationPage: React.FC = () => {
                 driverId: data.staffId
             };
             await dispatch(updateTransportation({ id: selectedTransportation.id, transportation: updatedTransportation }));
+            toast.success("Transportation updated successfully");
         }
         handleClose()
     }

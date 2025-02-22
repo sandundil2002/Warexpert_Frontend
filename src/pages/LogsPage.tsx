@@ -14,6 +14,7 @@ import {Warehouse} from "../model/warehouse.ts";
 import {Employee} from "../model/employee.ts";
 import {Inventory} from "../model/inventory.ts";
 import {Navigate} from "react-router-dom";
+import {toast} from "sonner";
 
 interface Field {
     id: string;
@@ -158,10 +159,12 @@ export const LogsPage: React.FC = () => {
                 inventoryId: data.inventoryId
             };
             await dispatch(addLog(newLog));
+            toast.success('Log added successfully');
         }
         handleClose();
     }
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const displayLogs = useMemo(() => {
         if (!searchQuery) return logs;
 

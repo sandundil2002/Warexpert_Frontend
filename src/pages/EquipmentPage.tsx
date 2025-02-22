@@ -12,6 +12,7 @@ import {Warehouse} from "../model/warehouse.ts";
 import {Employee} from "../model/employee.ts";
 import {getEmployees} from "../reducers/employee-slice.ts";
 import {Navigate} from "react-router-dom";
+import {toast} from "sonner";
 
 interface Field {
     id: string;
@@ -162,6 +163,7 @@ export const EquipmentPage: React.FC = () => {
 
     const handleDelete = async (equipmentId: string) => {
         await dispatch(deleteEquipment(equipmentId));
+        toast.warning("Equipment deleted successfully");
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -175,6 +177,7 @@ export const EquipmentPage: React.FC = () => {
                 staffId: data.staffId
             }
             await dispatch(addEquipment(newEquipment));
+            toast.success("Equipment added successfully");
         } else if (selectedEquipment) {
             const updatedEquipment: Equipment = {
                 id: selectedEquipment.equipmentId,
@@ -185,10 +188,12 @@ export const EquipmentPage: React.FC = () => {
                 staffId: data.staffId
             }
             await dispatch(updateEquipment({ id: selectedEquipment.id, equipment: updatedEquipment }));
+            toast.success("Equipment updated successfully");
         }
         handleClose();
     }
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const displayedEquipments = useMemo(() => {
         if (!searchQuery) {
             return equipments;

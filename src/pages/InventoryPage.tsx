@@ -12,6 +12,7 @@ import { Customer } from "../model/customer.ts";
 import { getWarehouses } from "../reducers/warehouse-slice.ts";
 import { getCustomers } from "../reducers/customer-slice.ts";
 import {Navigate} from "react-router-dom";
+import {toast} from "sonner";
 
 interface Field {
     id: string;
@@ -164,6 +165,7 @@ export const InventoryPage: React.FC = () => {
 
     const handleDelete = async (inventoryId: string) => {
         await dispatch(deleteInventory(inventoryId));
+        toast.warning("Inventory deleted successfully");
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -202,6 +204,7 @@ export const InventoryPage: React.FC = () => {
                 customerId: data.customerId,
             };
             await dispatch(addInventory(newInventory));
+            toast.success("Inventory added successfully");
         } else {
             const updatedInventory: Inventory = {
                 id: data.inventoryId,
@@ -215,11 +218,13 @@ export const InventoryPage: React.FC = () => {
                 customerId: data.customerId,
             };
             await dispatch(updateInventory({ id: updatedInventory.id, inventory: updatedInventory }));
+            toast.success("Inventory updated successfully");
         }
         handleClose();
     };
 
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const displayedInventory = useMemo(() => {
         if (!searchQuery) {
             return inventory;

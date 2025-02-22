@@ -1,4 +1,4 @@
-import {Component, ReactElement, useMemo, useState} from "react";
+import {Component, ReactElement, useEffect, useMemo, useState} from "react";
 import {Router} from '@toolpad/core/AppProvider';
 import {WarehousesPage} from "../../../pages/WarehousesPage.tsx";
 import {NotFoundPage} from "../../../pages/NotFoundPage.tsx";
@@ -10,6 +10,8 @@ import {TransportationPage} from "../../../pages/TransportationPage.tsx";
 import {EquipmentPage} from "../../../pages/EquipmentPage.tsx";
 import {MainPage} from "../../../pages/MainPage.tsx";
 import {ReportPage} from "../../../pages/ReportPage.tsx";
+import {Navigate} from "react-router-dom";
+import {toast} from "sonner";
 
 type RouteConfig = {
     [path: string]: ReactElement;
@@ -28,7 +30,16 @@ export function DashboardRouterComponent(initialPath: string): Router  & { Compo
         '/transportation': <TransportationPage />,
         '/equipment': <EquipmentPage />,
         '/reports': <ReportPage />,
+        '/logout': <Navigate to="/signin" replace />
     };
+
+    useEffect(() => {
+        if (pathname === "/logout") {
+            toast.info("Sign out successful!");
+            window.location.href = "/signin";
+
+        }
+    }, [pathname]);
 
     return useMemo(() => {
         return {

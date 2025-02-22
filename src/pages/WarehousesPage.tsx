@@ -8,6 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {addWarehouse, deleteWarehouse, getWarehouses, updateWarehouse} from "../reducers/warehouse-slice.ts";
 import {AppDispatch, RootState} from "../store/store.ts";
 import {Navigate} from "react-router-dom";
+import {toast} from "sonner";
 
 interface Field {
     id: string;
@@ -126,6 +127,7 @@ export const WarehousesPage: React.FC = () => {
 
     const handleDelete = async (warehouseId: string) => {
         await dispatch(deleteWarehouse(warehouseId));
+        toast.warning("Warehouse deleted successfully");
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -165,8 +167,10 @@ export const WarehousesPage: React.FC = () => {
 
         if (mode === 'create') {
             await dispatch(addWarehouse(warehouseData));
+            toast.success("Warehouse added successfully");
         } else if (selectedWarehouse) {
             await dispatch(updateWarehouse({ id: selectedWarehouse.id, warehouse: warehouseData }));
+            toast.success("Warehouse updated successfully");
         }
 
         handleClose();

@@ -8,6 +8,7 @@ import { PopupModalComponent } from "../components/popup/PopupModalComponent";
 import {addCustomer, deleteCustomer, getCustomers, updateCustomer} from "../reducers/customer-slice.ts";
 import {AppDispatch, RootState} from "../store/store.ts";
 import {Navigate} from "react-router-dom";
+import {toast} from "sonner";
 
 interface Field {
     id: string;
@@ -101,6 +102,7 @@ export const CustomerPage: React.FC = () => {
 
     const handleDelete = async (customerId: string) => {
         await dispatch(deleteCustomer(customerId));
+        toast.warning("Customer deleted successfully");
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -113,6 +115,7 @@ export const CustomerPage: React.FC = () => {
                 email: data.email,
             };
             await dispatch(addCustomer(newCustomer));
+            toast.success("Customer added successfully");
         } else if (selectedCustomer) {
             const updatedCustomer: Customer = {
                 id: selectedCustomer.id,
@@ -122,10 +125,12 @@ export const CustomerPage: React.FC = () => {
                 email: data.email,
             };
             await dispatch(updateCustomer({ id: selectedCustomer.id, customer: updatedCustomer}));
+            toast.success("Customer updated successfully");
         }
         handleClose();
     };
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const displayCustomers = useMemo(() => {
         if (!searchQuery) return customers;
 

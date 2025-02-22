@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store.ts";
 import {otpVerification, registerUser} from "../reducers/user-slice.ts";
 import { useLocation, useNavigate } from "react-router-dom";
+import {toast} from "sonner";
 
 export const OTPVerificationPage = () => {
     const { loading, isAuthenticated, error } = useSelector((state: RootState) => state.user);
@@ -41,12 +42,14 @@ export const OTPVerificationPage = () => {
     };
 
     const handleResendOTP = () => {
+        toast.info("Resending OTP...");
         dispatch(registerUser({ username, password }));
     }
 
 
     useEffect(() => {
         if (isAuthenticated) {
+            toast.info("User authenticated successfully");
             navigate("/dashboard");
         }
     }, [isAuthenticated]);
