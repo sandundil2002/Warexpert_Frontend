@@ -1,11 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import {apiInstance} from "../api/api-instance.ts";
+import {Employee} from "../model/employee.ts";
 
 const initialState = {
     jwt_token: null as string | null,
     refresh_token: null as string | null,
     username: null as string | null,
     isAuthenticated: false,
+    userDetail: null as Employee | null,
     loading: false,
     error: "",
 };
@@ -58,6 +61,19 @@ export const otpVerification = createAsyncThunk(
             return response.data;
         } catch (err: any) {
             return rejectWithValue(err.response?.data?.message || "OTP verification failed");
+        }
+    }
+);
+
+export const fetchUserAccount = createAsyncThunk(
+    "user/fetchUserAccount",
+    async (username:string) => {
+        try {
+            const response = await apiInstance.get(`user/get-user`, { params: { username } });
+            console.log("response", response.data);
+            return response.data;
+        } catch (e) {
+            console.log(e);
         }
     }
 );
@@ -142,6 +158,18 @@ const userSlice = createSlice({
         builder.addCase(otpVerification.rejected, (state, action) => {
             state.loading = false;
             state.isAuthenticated = false;
+            state.error = action.payload as string;
+        });
+        builder.addCase(fetchUserAccount.pending, (state) => {
+            state.loading = true;
+            state.error = "";
+        });
+        builder.addCase(fetchUserAccount.fulfilled, (state, action) => {
+            state.loading = false;
+            state.userDetail = action.payload;
+        });
+        builder.addCase(fetchUserAccount.rejected, (state, action) => {
+            state.loading = false;
             state.error = action.payload as string;
         });
     },

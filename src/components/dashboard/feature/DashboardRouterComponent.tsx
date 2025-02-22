@@ -10,8 +10,9 @@ import {TransportationPage} from "../../../pages/TransportationPage.tsx";
 import {EquipmentPage} from "../../../pages/EquipmentPage.tsx";
 import {MainPage} from "../../../pages/MainPage.tsx";
 import {ReportPage} from "../../../pages/ReportPage.tsx";
-import {Navigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 import {toast} from "sonner";
+import UserAccountPage from "../../../pages/UserAccountPage.tsx";
 
 type RouteConfig = {
     [path: string]: ReactElement;
@@ -19,6 +20,7 @@ type RouteConfig = {
 
 export function DashboardRouterComponent(initialPath: string): Router  & { Component: ReactElement } {
     const [pathname, setPathname] = useState(initialPath);
+    const navigate = useNavigate();
 
     const routes: RouteConfig = {
         '/dashboard': <MainPage />,
@@ -30,13 +32,14 @@ export function DashboardRouterComponent(initialPath: string): Router  & { Compo
         '/transportation': <TransportationPage />,
         '/equipment': <EquipmentPage />,
         '/reports': <ReportPage />,
+        '/settings': <UserAccountPage />,
         '/logout': <Navigate to="/signin" replace />
     };
 
     useEffect(() => {
         if (pathname === "/logout") {
             toast.info("Sign out successful!");
-            window.location.href = "/signin";
+            navigate("/signin", { replace: true });
 
         }
     }, [pathname]);
