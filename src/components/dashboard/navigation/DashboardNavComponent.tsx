@@ -3,7 +3,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { Navigation } from '@toolpad/core/AppProvider';
 import {
     Construction, EmojiPeople, Inventory,
-    LocalShipping,
+    LocalShipping, Payment,
     PowerSettingsNew, Settings, TransferWithinAStation,
     Warehouse
 } from "@mui/icons-material";
@@ -56,6 +56,11 @@ export const DashboardNavComponent: Navigation = [
         segment: 'reports',
         title: 'Analyzes',
         icon: <BarChartIcon />,
+    },
+    {
+        segment: 'payment',
+        title: 'Payment',
+        icon: <Payment />,
     },
     {
         segment: 'settings',

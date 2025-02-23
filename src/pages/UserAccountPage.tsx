@@ -1,4 +1,3 @@
-// UserAccountPage.tsx
 import React, { useEffect, useState } from 'react';
 import {
     Container,
@@ -30,7 +29,6 @@ interface PasswordChange {
     confirmPassword: string;
 }
 
-// Styled components
 const ProfilePaper = styled(Paper)(({ theme }) => ({
     borderRadius: 16,
     boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
@@ -118,7 +116,6 @@ const UserAccountPage: React.FC = () => {
     const handleProfileSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         setIsEditing(false);
-        // Here you would typically dispatch an update action
         console.log('Updated user:', user);
     };
 
@@ -128,7 +125,6 @@ const UserAccountPage: React.FC = () => {
             alert('New passwords do not match');
             return;
         }
-        // Here you would dispatch a password update action
         console.log('Password change request:', passwordData);
         setOpenPasswordDialog(false);
         setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });

@@ -13,6 +13,7 @@ import {ReportPage} from "../../../pages/ReportPage.tsx";
 import {Navigate, useNavigate} from "react-router-dom";
 import {toast} from "sonner";
 import UserAccountPage from "../../../pages/UserAccountPage.tsx";
+import {PaymentPage} from "../../../pages/PaymentPage.tsx";
 
 type RouteConfig = {
     [path: string]: ReactElement;
@@ -33,6 +34,7 @@ export function DashboardRouterComponent(initialPath: string): Router  & { Compo
         '/equipment': <EquipmentPage />,
         '/reports': <ReportPage />,
         '/settings': <UserAccountPage />,
+        '/payment': <PaymentPage />,
         '/logout': <Navigate to="/signin" replace />
     };
 

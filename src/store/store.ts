@@ -7,6 +7,7 @@ import logReducer from "../reducers/log-slice.ts";
 import transportationReducer from "../reducers/transportation-slice.ts";
 import equipmentReducer from "../reducers/equipment-slice.ts";
 import userReducer from "../reducers/user-slice.ts";
+import paymentReducer from "../reducers/payment-slice.ts";
 import {injectStore} from "../api/api-instance.ts";
 import reportReducer from "../reducers/report-slice.ts";
 
@@ -20,6 +21,7 @@ export const store = configureStore({
         transportation: transportationReducer,
         equipment: equipmentReducer,
         report: reportReducer,
+        payment: paymentReducer,
         user: userReducer,
     },
 });
