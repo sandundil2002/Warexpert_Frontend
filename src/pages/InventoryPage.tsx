@@ -164,8 +164,12 @@ export const InventoryPage: React.FC = () => {
     };
 
     const handleDelete = async (inventoryId: string) => {
-        await dispatch(deleteInventory(inventoryId));
-        toast.warning("Inventory deleted successfully");
+        const deleteInv = await dispatch(deleteInventory(inventoryId));
+        if (deleteInv.meta.requestStatus === 'fulfilled') {
+            toast.warning("Inventory deleted successfully");
+        } else {
+            toast.error("Failed to delete inventory");
+        }
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -203,8 +207,12 @@ export const InventoryPage: React.FC = () => {
                 warehouseId: data.warehouseId,
                 customerId: data.customerId,
             };
-            await dispatch(addInventory(newInventory));
-            toast.success("Inventory added successfully");
+            const addInv = await dispatch(addInventory(newInventory));
+            if (addInv.meta.requestStatus === 'fulfilled') {
+                toast.success("Inventory added successfully");
+            } else {
+                toast.error("Failed to add inventory");
+            }
         } else {
             const updatedInventory: Inventory = {
                 id: data.inventoryId,
@@ -217,8 +225,12 @@ export const InventoryPage: React.FC = () => {
                 warehouseId: data.warehouseId,
                 customerId: data.customerId,
             };
-            await dispatch(updateInventory({ id: updatedInventory.id, inventory: updatedInventory }));
-            toast.success("Inventory updated successfully");
+            const updateInv = await dispatch(updateInventory({ id: updatedInventory.id, inventory: updatedInventory }));
+            if (updateInv.meta.requestStatus === 'fulfilled') {
+                toast.info("Inventory updated successfully");
+            } else {
+                toast.error("Failed to update inventory");
+            }
         }
         handleClose();
     };

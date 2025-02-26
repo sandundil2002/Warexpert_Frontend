@@ -126,8 +126,12 @@ export const WarehousesPage: React.FC = () => {
     };
 
     const handleDelete = async (warehouseId: string) => {
-        await dispatch(deleteWarehouse(warehouseId));
-        toast.warning("Warehouse deleted successfully");
+        const deleteWare = await dispatch(deleteWarehouse(warehouseId));
+        if (deleteWare.meta.requestStatus === 'fulfilled') {
+            toast.warning("Warehouse deleted successfully");
+        } else {
+            toast.error("Failed to delete warehouse");
+        }
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -166,16 +170,25 @@ export const WarehousesPage: React.FC = () => {
         };
 
         if (mode === 'create') {
-            await dispatch(addWarehouse(warehouseData));
-            toast.success("Warehouse added successfully");
+            const addWare = await dispatch(addWarehouse(warehouseData));
+            if (addWare.meta.requestStatus === 'fulfilled') {
+                toast.success("Warehouse added successfully");
+            } else {
+                toast.error("Failed to add warehouse");
+            }
         } else if (selectedWarehouse) {
-            await dispatch(updateWarehouse({ id: selectedWarehouse.id, warehouse: warehouseData }));
-            toast.success("Warehouse updated successfully");
+            const updateWare = await dispatch(updateWarehouse({ id: selectedWarehouse.id, warehouse: warehouseData }));
+            if (updateWare.meta.requestStatus === 'fulfilled') {
+                toast.info("Warehouse updated successfully");
+            } else {
+                toast.error("Failed to update warehouse");
+            }
         }
 
         handleClose();
     };
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const displayedWarehouses = useMemo(() => {
         if (!searchQuery) return warehouses;
 

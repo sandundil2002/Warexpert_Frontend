@@ -19,14 +19,12 @@ export const getAllPayments = createAsyncThunk(
 
 interface PaymentState {
     payments: any[];
-    push: (payment: any) => void;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: PaymentState = {
     payments: [],
-    push: () => {},
     loading: false,
     error: null,
 };
@@ -43,7 +41,7 @@ const paymentSlice = createSlice({
             })
             .addCase(createPayment.fulfilled, (state, action) => {
                 state.loading = false;
-                state.push(action.payload);
+                state.payments = action.payload;
             })
             .addCase(createPayment.rejected, (state, action) => {
                 state.loading = false;

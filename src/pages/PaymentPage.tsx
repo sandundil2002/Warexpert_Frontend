@@ -41,7 +41,7 @@ export const PaymentPage: React.FC = () => {
 
     useEffect(() => {
         dispatch(getAllPayments());
-    }, [dispatch]);
+    }, [dispatch, payments.length]);
 
     useEffect(() => {
         if (!customers.length) {
@@ -91,7 +91,7 @@ export const PaymentPage: React.FC = () => {
         e.preventDefault();
 
         try {
-            const paymentPromise = dispatch(
+            const payment = dispatch(
                 createPayment({
                     customerId,
                     inventoryItems,
@@ -99,11 +99,13 @@ export const PaymentPage: React.FC = () => {
                 })
             );
 
-            toast.promise(paymentPromise, {
+            toast.promise(payment, {
                 loading: "Pending payment...",
                 success: "Payment successfully",
                 error: "Insufficient inventory items quantity",
             });
+
+            await dispatch(getAllPayments());
 
             setCustomerId("");
             setInventoryItems([]);
@@ -112,6 +114,7 @@ export const PaymentPage: React.FC = () => {
             console.error("Error during payment creation:", error);
         }
     };
+
 
     return (
         <>

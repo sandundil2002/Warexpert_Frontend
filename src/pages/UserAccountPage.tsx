@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store.ts";
 import { fetchUserAccount } from "../reducers/user-slice.ts";
 import { Employee } from "../model/employee.ts";
+import {Navigate} from "react-router-dom";
 
 interface PasswordChange {
     currentPassword: string;
@@ -54,7 +55,7 @@ const UserAccountPage: React.FC = () => {
     const { userDetail, loading, error } = useSelector((state: RootState) => state.user);
     const username = useSelector((state: RootState) => state.user.username);
     const dispatch = useDispatch<AppDispatch>();
-
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
     const [user, setUser] = useState<Employee | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
@@ -71,11 +72,17 @@ const UserAccountPage: React.FC = () => {
         }
     }, [dispatch, username]);
 
+    if (!isAuthenticated) {
+        return <Navigate to="/signin" />;
+    }
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         console.log("User Detail:", userDetail);
         console.log("Username:", username);
     }, [userDetail, username]);
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         if (userDetail) {
             setUser({

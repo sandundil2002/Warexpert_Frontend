@@ -153,8 +153,13 @@ export const EmployeePage: React.FC = () => {
     };
 
     const handleDelete = async (employeeId: string) => {
-        await dispatch(deleteEmployee(employeeId));
-        toast.warning("Employee deleted successfully");
+        const deleteEmp = await dispatch(deleteEmployee(employeeId));
+        if (deleteEmp.meta.requestStatus === 'fulfilled') {
+            toast.warning("Employee deleted successfully");
+        } else {
+            toast.error("Failed to delete employee");
+        }
+
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -169,8 +174,12 @@ export const EmployeePage: React.FC = () => {
                 mobile: data.mobile,
                 warehouseId: data.warehouseId,
             };
-            await dispatch(addEmployee(newEmployee));
-            toast.success("Employee added successfully");
+            const addEmp = await dispatch(addEmployee(newEmployee));
+            if (addEmp.meta.requestStatus === 'fulfilled') {
+                toast.success("Employee added successfully");
+            } else {
+                toast.error("Failed to add employee");
+            }
         } else {
             const updatedEmployee: Employee = {
                 id: data.employeeId,
@@ -182,8 +191,12 @@ export const EmployeePage: React.FC = () => {
                 mobile: data.mobile,
                 warehouseId: data.warehouseId,
             };
-            await dispatch(updateEmployee({ id: updatedEmployee.id, employee: updatedEmployee }));
-            toast.success("Employee updated successfully");
+            const updateEmp = await dispatch(updateEmployee({ id: updatedEmployee.id, employee: updatedEmployee }));
+            if (updateEmp.meta.requestStatus === 'fulfilled') {
+                toast.info("Employee updated successfully");
+            } else {
+                toast.error("Failed to update employee");
+            }
         }
         handleClose();
     };

@@ -138,8 +138,12 @@ export const TransportationPage: React.FC = () => {
     }
 
     const handleDelete = async (transportationsId: string) => {
-        await dispatch(deleteTransportation(transportationsId));
-        toast.warning("Transportation deleted successfully");
+        const deleteTrans = await dispatch(deleteTransportation(transportationsId));
+        if (deleteTrans.meta.requestStatus === 'fulfilled') {
+            toast.warning("Transportation deleted successfully");
+        } else {
+            toast.error("Failed to delete transportation");
+        }
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -152,8 +156,12 @@ export const TransportationPage: React.FC = () => {
                 status: data.status,
                 driverId: data.staffId
             };
-            await dispatch(addTransportation(newTransportation));
-            toast.success("Transportation added successfully");
+            const addTrans = await dispatch(addTransportation(newTransportation));
+            if (addTrans.meta.requestStatus === 'fulfilled') {
+                toast.success("Transportation added successfully");
+            } else {
+                toast.error("Failed to add transportation");
+            }
         } else if (selectedTransportation) {
             const updatedTransportation: Transportation = {
                 id: selectedTransportation.id,
@@ -163,8 +171,12 @@ export const TransportationPage: React.FC = () => {
                 status: data.status,
                 driverId: data.staffId
             };
-            await dispatch(updateTransportation({ id: selectedTransportation.id, transportation: updatedTransportation }));
-            toast.success("Transportation updated successfully");
+            const updateTrans = await dispatch(updateTransportation({ id: selectedTransportation.id, transportation: updatedTransportation }));
+            if (updateTrans.meta.requestStatus === 'fulfilled') {
+                toast.info("Transportation updated successfully");
+            } else {
+                toast.error("Failed to update transportation");
+            }
         }
         handleClose()
     }

@@ -1,4 +1,5 @@
 import {configureStore} from "@reduxjs/toolkit";
+import dashboardReducer from "../reducers/dashboard-slice.ts";
 import warehouseReducer from "../reducers/warehouse-slice.ts";
 import customerReducer from "../reducers/customer-slice.ts";
 import inventoryReducer from "../reducers/inventory-slice.ts";
@@ -13,6 +14,7 @@ import reportReducer from "../reducers/report-slice.ts";
 
 export const store = configureStore({
     reducer: {
+        dashboard: dashboardReducer,
         warehouse: warehouseReducer,
         customer: customerReducer,
         inventory: inventoryReducer,

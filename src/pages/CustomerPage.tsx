@@ -5,10 +5,10 @@ import { TitleComponent } from "../components/common/TitleComponent";
 import { SearchBarComponent } from "../components/common/SearchBarComponent";
 import { ColumnDef, TableComponent } from "../components/common/TableComponent";
 import { PopupModalComponent } from "../components/popup/PopupModalComponent";
-import {addCustomer, deleteCustomer, getCustomers, updateCustomer} from "../reducers/customer-slice.ts";
-import {AppDispatch, RootState} from "../store/store.ts";
-import {Navigate} from "react-router-dom";
-import {toast} from "sonner";
+import { addCustomer, deleteCustomer, getCustomers, updateCustomer } from "../reducers/customer-slice.ts";
+import { AppDispatch, RootState } from "../store/store.ts";
+import { Navigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface Field {
     id: string;
@@ -101,8 +101,12 @@ export const CustomerPage: React.FC = () => {
     };
 
     const handleDelete = async (customerId: string) => {
-        await dispatch(deleteCustomer(customerId));
-        toast.warning("Customer deleted successfully");
+        const deleteCus = await dispatch(deleteCustomer(customerId));
+        if (deleteCus.meta.requestStatus === "fulfilled") {
+            toast.warning("Customer deleted successfully");
+        } else {
+            toast.error("Failed to delete customer");
+        }
     };
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -114,8 +118,12 @@ export const CustomerPage: React.FC = () => {
                 mobile: data.mobile,
                 email: data.email,
             };
-            await dispatch(addCustomer(newCustomer));
-            toast.success("Customer added successfully");
+            const saveCus = await dispatch(addCustomer(newCustomer)).unwrap();
+            if (saveCus) {
+                toast.success("Customer added successfully");
+            } else {
+                toast.error("Failed to add customer");
+            }
         } else if (selectedCustomer) {
             const updatedCustomer: Customer = {
                 id: selectedCustomer.id,
@@ -124,8 +132,12 @@ export const CustomerPage: React.FC = () => {
                 mobile: data.mobile,
                 email: data.email,
             };
-            await dispatch(updateCustomer({ id: selectedCustomer.id, customer: updatedCustomer}));
-            toast.success("Customer updated successfully");
+            const updateCus = await dispatch(updateCustomer({ id: selectedCustomer.id, customer: updatedCustomer}));
+            if (updateCus) {
+                toast.info("Customer updated successfully");
+            } else {
+                toast.error("Failed to update customer");
+            }
         }
         handleClose();
     };

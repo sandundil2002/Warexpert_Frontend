@@ -162,8 +162,13 @@ export const EquipmentPage: React.FC = () => {
     }
 
     const handleDelete = async (equipmentId: string) => {
-        await dispatch(deleteEquipment(equipmentId));
-        toast.warning("Equipment deleted successfully");
+        const deleteEqu = await dispatch(deleteEquipment(equipmentId));
+        if (deleteEqu.meta.requestStatus === 'fulfilled') {
+            toast.warning("Equipment deleted successfully");
+        } else {
+            toast.error("Failed to delete equipment");
+        }
+
     }
 
     const handleSubmit = async (data: Record<string, any>) => {
@@ -176,8 +181,12 @@ export const EquipmentPage: React.FC = () => {
                 warehouseId: data.warehouseId,
                 staffId: data.staffId
             }
-            await dispatch(addEquipment(newEquipment));
-            toast.success("Equipment added successfully");
+            const addEqu = await dispatch(addEquipment(newEquipment));
+            if (addEqu.meta.requestStatus === 'fulfilled') {
+                toast.success("Equipment added successfully");
+            } else {
+                toast.error("Failed to add equipment");
+            }
         } else if (selectedEquipment) {
             const updatedEquipment: Equipment = {
                 id: selectedEquipment.equipmentId,
@@ -187,8 +196,12 @@ export const EquipmentPage: React.FC = () => {
                 warehouseId: data.warehouseId,
                 staffId: data.staffId
             }
-            await dispatch(updateEquipment({ id: selectedEquipment.id, equipment: updatedEquipment }));
-            toast.success("Equipment updated successfully");
+            const updateEqu = await dispatch(updateEquipment({ id: selectedEquipment.id, equipment: updatedEquipment }));
+            if (updateEqu.meta.requestStatus === 'fulfilled') {
+                toast.info("Equipment updated successfully");
+            } else {
+                toast.error("Failed to update equipment");
+            }
         }
         handleClose();
     }
