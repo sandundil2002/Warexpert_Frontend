@@ -130,6 +130,7 @@ export const InventoryPage: React.FC = () => {
         { id: 'category', label: 'Category', align: "center" },
         { id: 'quantity', label: 'Quantity', align: "center" },
         { id: 'status', label: 'Status', align: "center" },
+        { id: 'trackingNumber', label: 'Tracking Number', align: "center" },
         { id: 'expiry', label: 'Expiry', align: "center" },
         {
             id: 'image',
