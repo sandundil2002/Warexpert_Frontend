@@ -4,12 +4,11 @@ import {DashboardPageLayout} from "../components/layout/DashboardPageLayout.tsx"
 import {DashboardSkeletonComponent} from "../components/dashboard/feature/DashboardSkeletonComponent.tsx";
 
 export const DashboardPage: React.FC = () => {
-
     return (
         <DashboardPageLayout>
             <Grid container spacing={1}>
-                <Grid size={5}/>
-                <Grid size={12}>
+                <Grid/>
+                <Grid>
                     <DashboardSkeletonComponent height={14}/>
                 </Grid>
                 <Grid size={12}>

@@ -1,6 +1,8 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Warehouse} from "../model/warehouse.ts";
 import {apiInstance} from "../api/api-instance.ts";
+import {toast} from "sonner";
+import axios from "axios";
 
 const initialState: Warehouse[] = [];
 
@@ -23,7 +25,13 @@ export const addWarehouse = createAsyncThunk<Warehouse, Warehouse>(
             const response = await apiInstance.post(`/warehouse/post`, warehouse);
             return response.data;
         } catch (error) {
-            console.log("error", error);
+            if (axios.isAxiosError(error) && error.response) {
+                if (error.response.status === 403) {
+                    toast.error("You are not authorized to perform this action");
+                } else {
+                    console.log("error", error);
+                }
+            }
         }
     }
 );
@@ -35,16 +43,35 @@ export const updateWarehouse = createAsyncThunk<Warehouse, {id: string; warehous
             const response = await apiInstance.patch(`/warehouse/patch/${id}`, warehouse);
             return response.data;
         } catch (error) {
-            console.log("error", error);
+            if (axios.isAxiosError(error) && error.response) {
+                if (error.response.status === 403) {
+                    toast.error("You are not authorized to perform this action");
+                } else {
+                    console.log("error", error);
+                }
+            }
         }
     }
 );
 
-export const deleteWarehouse = createAsyncThunk<string, string>(
+export const deleteWarehouse = createAsyncThunk<string, string, { rejectValue: string }>(
     "warehouse/deleteWarehouse",
-    async (id) =>{
-        await apiInstance.delete(`/warehouse/delete/${id}`);
-        return id;
+    async (id, { rejectWithValue }) => {
+        try {
+            await apiInstance.delete(`/warehouse/delete/${id}`);
+            return id;
+        } catch (error) {
+            console.error("Error deleting warehouse:", error);
+
+            if (axios.isAxiosError(error) && error.response) {
+                if (error.response.status === 403) {
+                    toast.error("You are not authorized to perform this action");
+                }
+                return rejectWithValue(error.response.data?.message || "An error occurred while deleting.");
+            }
+
+            return rejectWithValue("Network error or server unavailable.");
+        }
     }
 );
 

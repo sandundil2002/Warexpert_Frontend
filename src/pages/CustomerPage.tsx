@@ -102,7 +102,7 @@ export const CustomerPage: React.FC = () => {
 
     const handleDelete = async (customerId: string) => {
         const deleteCus = await dispatch(deleteCustomer(customerId));
-        if (deleteCus.meta.requestStatus === "fulfilled") {
+        if (deleteCus.meta.requestStatus === 'fulfilled') {
             toast.warning("Customer deleted successfully");
         } else {
             toast.error("Failed to delete customer");

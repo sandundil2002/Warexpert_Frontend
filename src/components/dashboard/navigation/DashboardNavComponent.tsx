@@ -1,12 +1,7 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { Navigation } from '@toolpad/core/AppProvider';
-import {
-    Construction, EmojiPeople, Inventory,
-    LocalShipping, Payment,
-    PowerSettingsNew, Settings, TransferWithinAStation,
-    Warehouse
-} from "@mui/icons-material";
+import {Construction, EmojiPeople, Inventory, LocalShipping, Payment, PowerSettingsNew, Settings, TransferWithinAStation, Warehouse} from "@mui/icons-material";
 
 export const DashboardNavComponent: Navigation = [
     {

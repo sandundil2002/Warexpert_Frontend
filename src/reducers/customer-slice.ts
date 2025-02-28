@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {Customer} from "../model/customer.ts";
 import {apiInstance} from "../api/api-instance.ts";
+import axios from "axios";
+import {toast} from "sonner";
 
 export const initialState : Customer[] = [];
 
@@ -23,7 +25,13 @@ export const addCustomer = createAsyncThunk<Customer, Customer>(
             const response = await apiInstance.post("/customer/post", customer);
             return response.data;
         } catch (error) {
-            console.log("error", error);
+            if (axios.isAxiosError(error) && error.response) {
+                if (error.response.status === 403) {
+                    toast.error("You are not authorized to perform this action");
+                } else {
+                    console.log("error", error);
+                }
+            }
         }
     }
 );
@@ -35,16 +43,33 @@ export const updateCustomer = createAsyncThunk<Customer, { id: string; customer:
             const response = await apiInstance.patch(`/customer/patch/${id}`, customer);
             return response.data;
         } catch (error) {
-            console.log("error", error);
+            if (axios.isAxiosError(error) && error.response) {
+                if (error.response.status === 403) {
+                    toast.error("You are not authorized to perform this action");
+                } else {
+                    console.log("error", error);
+                }
+            }
         }
     }
 );
 
-export const deleteCustomer = createAsyncThunk<string, string>(
+export const deleteCustomer = createAsyncThunk<string, string, { rejectValue: string }>(
     "customer/deleteCustomer",
-    async (id) => {
-        await apiInstance.delete(`/customer/delete/${id}`);
-        return id;
+    async (id, { rejectWithValue }) => {
+        try {
+            await apiInstance.delete(`/customer/delete/${id}`);
+            return id;
+        } catch (error) {
+            console.log("error", error);
+            if (axios.isAxiosError(error) && error.response) {
+                if (error.response.status === 403) {
+                    toast.error("You are not authorized to perform this action");
+                }
+                return rejectWithValue(error.response.data?.message || "An error occurred while deleting.");
+            }
+            return rejectWithValue("Network error or server unavailable.");
+        }
     }
 );
 
@@ -97,7 +122,6 @@ const customerSlice = createSlice({
                 console.log("Pending delete customer:");
             })
             .addCase(deleteCustomer.fulfilled, (state, action) => {
-                console.log("Customer deleted successfully");
                 return state.filter((customer) => customer.id !== action.payload);
             })
             .addCase(deleteCustomer.rejected, () => {

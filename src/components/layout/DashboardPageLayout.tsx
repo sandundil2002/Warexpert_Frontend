@@ -23,4 +23,3 @@ export const DashboardPageLayout: React.FC<DashboardPageLayoutProps> = () => {
         </AppProvider>
     );
 };
-
