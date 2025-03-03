@@ -60,13 +60,13 @@ export const WarehousesPage: React.FC = () => {
         },
         {
             id: 'size',
-            label: 'Size',
+            label: 'Size(Sq ft)',
             type: 'number',
             required: true
         },
         {
             id: 'capacity',
-            label: 'Capacity',
+            label: 'Capacity(Units)',
             type: 'number',
             required: true
         },
@@ -82,8 +82,8 @@ export const WarehousesPage: React.FC = () => {
         { id: 'id', label: 'ID', align: 'center' },
         { id: 'name', label: 'Name', align: 'center' },
         { id: 'location', label: 'Location', align: 'center' },
-        { id: 'size', label: 'Size', align: 'center' },
-        { id: 'capacity', label: 'Capacity', align: 'center' },
+        { id: 'size', label: 'Size(Sq ft)', align: 'center' },
+        { id: 'capacity', label: 'Capacity(Units)', align: 'center' },
         { id: 'createdAt', label: 'Created', align: 'center' },
         {
             id: 'image',
@@ -209,7 +209,7 @@ export const WarehousesPage: React.FC = () => {
 
     return (
         <div className="p-4 space-y-4">
-            <TitleComponent title="WarehouseModel Section" addNew={handleOpen}/>
+            <TitleComponent title="Warehouse Section" addNew={handleOpen}/>
 
             <SearchBarComponent<Warehouse>
                 title="Search WarehouseModel By ID"

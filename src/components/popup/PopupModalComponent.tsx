@@ -131,6 +131,7 @@ export const PopupModalComponent: React.FC<PopupModal> = ({open, handleClose, ti
                                                 <input
                                                     type="file"
                                                     hidden
+                                                    className="capitalize"
                                                     name={field.id}
                                                     onChange={(e) => {
                                                         const file = e.target.files?.[0];

@@ -80,7 +80,7 @@ export const EmployeePage: React.FC = () => {
             type: 'select',
             required: true,
             options: [
-                { value: 'Midday Shift', label: 'Morning Shift' },
+                { value: 'Morning Shift', label: 'Morning Shift' },
                 { value: 'Afternoon Shift', label: 'Afternoon Shift' },
                 { value: 'Night Shift', label: 'Night Shift' },
                 { value: 'Standard Day Shift', label: 'Standard Day Shift' },
@@ -236,7 +236,6 @@ export const EmployeePage: React.FC = () => {
                     onDelete={handleDelete}
                     enableSelection={true}
                     onRowSelect={(employee) => console.log(employee)}
-                    rowsPerPage={5}
                 />
                 <PopupModalComponent
                     open={open}

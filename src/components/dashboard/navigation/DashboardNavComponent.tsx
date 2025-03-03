@@ -29,8 +29,7 @@ export const DashboardNavComponent: Navigation = [
         icon: <TransferWithinAStation />,
     },
     {
-        kind: 'header',
-        title: 'Inventory Items',
+        kind: 'divider',
     },
     {
         segment: 'inventory',

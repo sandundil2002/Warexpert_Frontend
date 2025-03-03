@@ -5,12 +5,7 @@ import {TitleComponent} from "../components/common/TitleComponent.tsx";
 import {SearchBarComponent} from "../components/common/SearchBarComponent.tsx";
 import {PopupModalComponent} from "../components/popup/PopupModalComponent.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {
-    addTransportation,
-    deleteTransportation,
-    getTransportations,
-    updateTransportation
-} from "../reducers/transportation-slice.ts";
+import {addTransportation, deleteTransportation, getTransportations, updateTransportation} from "../reducers/transportation-slice.ts";
 import {AppDispatch, RootState} from "../store/store.ts";
 import {getEmployees} from "../reducers/employee-slice.ts";
 import {Employee} from "../model/employee.ts";
@@ -28,7 +23,16 @@ interface Field {
 }
 
 export const TransportationPage: React.FC = () => {
-    const transportations = useSelector((state: RootState) => state.transportation);
+    const transportations = useSelector((state: RootState) =>
+        (state.transportation || []).map(t => ({
+            id: t?.id || '',
+            type: t?.type || '',
+            capacity: t?.capacity || '',
+            numberPlate: t?.numberPlate || '',
+            status: t?.status || '',
+            driverId: t?.driverId || ''
+        }))
+    );
     const employees = useSelector((state: RootState) => state.employee);
     const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
@@ -36,10 +40,34 @@ export const TransportationPage: React.FC = () => {
     const [selectedTransportation, setSelectedTransportation] = useState<Transportation | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
     const [searchQuery, setSearchQuery] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(true);
+
+    const displayTransportations = useMemo(() => {
+        if (!transportations || transportations.length === 0) {
+            return [];
+        }
+
+        if (!searchQuery) {
+            return transportations;
+        }
+
+        return transportations.filter((transportation) =>
+            transportation && transportation.id && transportation.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            transportation && transportation.type && transportation.type.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [transportations, searchQuery]);
 
     useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            await dispatch(getTransportations());
+            setIsLoading(false);
+        };
+
         if (!transportations.length) {
-            dispatch(getTransportations());
+            fetchData();
+        } else {
+            setIsLoading(false);
         }
     }, [dispatch, transportations.length]);
 
@@ -181,17 +209,6 @@ export const TransportationPage: React.FC = () => {
         handleClose()
     }
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const displayTransportations = useMemo(() => {
-        if (!searchQuery) {
-            return transportations;
-        }
-        return transportations.filter((transportation) =>
-            transportation.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            transportation.type.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [transportations, searchQuery]);
-
     const handleTransportationSelect = (transportation: Transportation | null) => {
         if (transportation) {
             setSearchQuery(transportation.id);
@@ -211,13 +228,17 @@ export const TransportationPage: React.FC = () => {
                     onSelect={handleTransportationSelect}
                 />
 
-                <TableComponent
-                    columns={columns}
-                    data={displayTransportations}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    enableSelection={true}
-                />
+                {isLoading ? (
+                    <div>Loading...</div>
+                ) : (
+                    <TableComponent
+                        columns={columns}
+                        data={displayTransportations}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        enableSelection={true}
+                    />
+                )}
                 <PopupModalComponent
                     open={open}
                     handleClose={handleClose}

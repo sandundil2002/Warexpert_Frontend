@@ -32,14 +32,12 @@ export interface GenericTableProps<T extends TableItem> {
     columns: ColumnDef<T>[];
     onEdit?: (item: T) => void;
     onDelete?: (itemId: string) => void;
-    rowsPerPage?: number;
     enableSelection?: boolean;
     onRowSelect?: (item: T | null) => void;
     customActions?: (item: T) => React.ReactNode;
 }
 
-export const TableComponent = <T extends TableItem>({data, columns, onEdit, onDelete, rowsPerPage = 5, enableSelection = true, onRowSelect, customActions}: GenericTableProps<T>) => {
-    const [page] = useState(0);
+export const TableComponent = <T extends TableItem>({data, columns, onEdit, onDelete, enableSelection = true, onRowSelect, customActions}: GenericTableProps<T>) => {
     const [selectedRow, setSelectedRow] = useState<string | null>(null);
     const isSelected = (id: string) => selectedRow === id;
 
@@ -116,7 +114,7 @@ export const TableComponent = <T extends TableItem>({data, columns, onEdit, onDe
                                     <TableCell
                                         key={column.id.toString()}
                                         align={column.align}
-                                        className="font-semibold"
+                                        className="font-semibold capitalize"
                                     >
                                         <Tooltip title={`Sort by ${column.label}`}>
                                             <TableSortLabel>
@@ -129,7 +127,6 @@ export const TableComponent = <T extends TableItem>({data, columns, onEdit, onDe
                         </TableHead>
                         <TableBody>
                             {data
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((item) => (
                                     <TableRow
                                         hover
@@ -137,7 +134,7 @@ export const TableComponent = <T extends TableItem>({data, columns, onEdit, onDe
                                         onClick={() => handleRowClick(item)}
                                         selected={isSelected(item.id)}
                                         className={`
-                                            cursor-pointer
+                                            cursor-pointer capitalize
                                             ${isSelected(item.id) ? 'bg-blue-100' : ''}
                                         `}
                                     >
