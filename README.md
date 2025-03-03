@@ -46,7 +46,7 @@ Here're some of the project's best features:
 <p>1. Clone the repository</p>
 
 ```
-gitclone https://github.com/sandundil2002/Warexpert_Frontend.git
+git clone https://github.com/sandundil2002/Warexpert_Frontend.git
 ```
 
 <p>2. Install dependencies</p>
